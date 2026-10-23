@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>OMAR'S</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="mode-tv">
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<div id="splash"><img src="logo.png" alt="OMAR'S"></div>
+
+<div id="app"><div id="shift">
+  <header class="top">
+    <div class="clockbox">
+      <div id="clock"><span id="ct"></span><span class="cs"><i id="cs"></i><i id="cap"></i></span></div>
+      <div class="vr"></div>
+      <div class="dt"><b id="dday"></b><span id="ddate"></span></div>
+    </div>
+    <div class="pill" id="wx" tabindex="-1"></div>
+    <div class="grow"></div>
+    <nav class="tools" id="tools">
+      <button class="ib" data-act="sheet" data-s="sleep" aria-label="وضع النوم" title="وضع النوم"><svg viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
+      <button class="ib" data-act="sheet" data-s="manage" aria-label="إدارة القنوات" title="إدارة القنوات"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
+      <button class="ib" data-act="sheet" data-s="settings" aria-label="الإعدادات" title="الإعدادات"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></button>
+      <button class="ib" data-act="full" aria-label="ملء الشاشة" title="ملء الشاشة"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      <img class="mark" src="logo-symbol.png" alt="OMAR'S">
+    </nav>
+  </header>
+
+  <main class="stage" id="stage">
+    <section id="player" class="player">
+      <div id="viewport"></div>
+      <div class="live" id="live"><i></i>مباشر</div>
+      <div class="audpanel" id="audpanel">
+        <img src="logo-symbol.png" alt="">
+        <h3 id="audname"></h3>
+        <canvas id="viz"></canvas>
+        <p id="audnote"></p>
+      </div>
+      <div class="overlay" id="overlay">
+        <h3 id="ovt"></h3><p id="ovm"></p>
+        <div class="row"><button class="btn" id="ovb1"></button><button class="btn ghost" id="ovb2"></button></div>
+      </div>
+      <div class="ctrls" id="ctrls">
+        <button class="ib" data-act="prev" aria-label="السابق"><svg viewBox="0 0 24 24"><path d="M9 5l8 7-8 7z" class="f"/></svg></button>
+        <button class="ib big" data-act="play" id="bplay" aria-label="تشغيل"></button>
+        <button class="ib" data-act="next" aria-label="التالي"><svg viewBox="0 0 24 24"><path d="M15 5l-8 7 8 7z" class="f"/></svg></button>
+        <button class="ib" data-act="mute" id="bmute" aria-label="كتم"></button>
+        <button class="ib" data-act="vol" data-d="-10" aria-label="خفض الصوت">−</button>
+        <span id="vlab">٨٠٪</span>
+        <button class="ib" data-act="vol" data-d="10" aria-label="رفع الصوت">+</button>
+        <button class="ib txt" data-act="aud" id="baud">مؤشر صوتي</button>
+      </div>
+    </section>
+    <aside id="side" class="side">
+      <div class="seg" id="seg">
+        <button data-act="mode" data-m="tv" class="on">تلفزيون</button>
+        <button data-act="mode" data-m="radio">راديو</button>
+      </div>
+      <div class="listhead"><span id="lhead"></span><button class="mini" data-act="favf" id="bfav">★ المفضلة</button></div>
+      <div class="list" id="list"></div>
+    </aside>
+  </main>
+
+  <footer id="prayers" class="prayers"></footer>
+</div></div>
+
+<div id="alertbar" role="status"></div>
+<div id="toast" role="status"></div>
+<div id="fullhint">اضغط Back للخروج من ملء الشاشة</div>
+
+<!-- sheets -->
+<div class="sheet" id="sheet-settings" aria-hidden="true">
+  <div class="panel">
+    <h2>الإعدادات</h2>
+    <div class="actions">
+      <button class="btn" data-act="s-save">حفظ</button>
+      <button class="btn ghost" data-act="s-cancel">إلغاء</button>
+      <button class="btn ghost" data-act="s-preview">معاينة المظهر</button>
+      <button class="btn ghost" data-act="s-reset">استعادة الافتراضي</button>
+      <button class="btn ghost" data-act="s-export">تصدير</button>
+      <button class="btn ghost" data-act="s-import">استيراد</button>
+    </div>
+    <div class="rows" id="srows"></div>
+    <textarea id="io" rows="4" dir="ltr" placeholder="الصق الإعدادات هنا ثم اضغط استيراد" style="display:none"></textarea>
+  </div>
+</div>
+
+<div class="sheet" id="sheet-manage" aria-hidden="true">
+  <div class="panel">
+    <h2>إدارة القنوات والمحطات</h2>
+    <div class="seg" id="mseg">
+      <button data-act="mtab" data-m="tv" class="on">القنوات</button>
+      <button data-act="mtab" data-m="radio">المحطات</button>
+    </div>
+    <div class="mlist" id="mlist"></div>
+    <div class="actions"><button class="btn" data-act="madd">إضافة</button><button class="btn ghost" data-act="close">إغلاق</button></div>
+    <form class="form" id="mform" autocomplete="off" style="display:none">
+      <label>الاسم<input id="f-name" required></label>
+      <label>النوع<button type="button" class="btn ghost" id="f-type" data-act="ftype"></button></label>
+      <label class="wide">رابط الفيديو أو البث<input id="f-url" dir="ltr" placeholder="https://…"></label>
+      <label class="wide">رابط الشعار (اختياري)<input id="f-logo" dir="ltr" placeholder="https://…"></label>
+      <label>التصنيف<input id="f-cat"></label>
+      <label>مستوى الصوت الافتراضي<input id="f-vol" type="number" min="0" max="100" value="80"></label>
+      <div class="wide hintline" id="f-msg"></div>
+      <div class="wide row"><button type="button" class="btn" data-act="fsave">حفظ وتجربة</button><button type="button" class="btn ghost" data-act="fcancel">إلغاء</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="sheet" id="sheet-sleep" aria-hidden="true">
+  <div class="panel narrow">
+    <h2>وضع النوم</h2>
+    <p class="hintline">تبقى على الشاشة الساعة والصلاة والتاريخ والطقس فقط، ويستمر تشغيل الصوت (قناة أو راديو) حتى تخرج من وضع النوم أو ينتهي المؤقت. التطبيق لا يتحكم بإضاءة لوحة التلفزيون نفسها.</p>
+    <div class="chips" id="chips">
+      <button class="btn ghost" data-act="timer" data-m="15">١٥ دقيقة</button>
+      <button class="btn ghost" data-act="timer" data-m="30">٣٠ دقيقة</button>
+      <button class="btn ghost" data-act="timer" data-m="60">٦٠ دقيقة</button>
+      <button class="btn ghost" data-act="timer" data-m="120">١٢٠ دقيقة</button>
+      <span class="custom"><input id="cm" type="number" min="1" max="720" placeholder="دقائق"><button class="btn ghost" data-act="timerc">مدة مخصصة</button></span>
+    </div>
+    <div class="timer" id="tleft">لا يوجد مؤقت</div>
+    <div class="actions"><button class="btn" data-act="sleepnow">دخول وضع النوم</button><button class="btn ghost" data-act="timerx">إلغاء المؤقت</button><button class="btn ghost" data-act="close">إغلاق</button></div>
+  </div>
+</div>
+
+<div id="sleepscr" aria-hidden="true"><div class="in" id="sleepin">
+  <div class="sclock"><span id="sct"></span><small id="scap"></small></div>
+  <div class="sdate"><span id="sdd"></span></div>
+  <div class="sw" id="sw"></div>
+  <div class="snow" id="snow"></div>
+  <div class="sp" id="sp"></div>
+  <div class="shint">OK أو Back للخروج · ▲ ▼ السطوع · ◄ ► الصوت</div>
+</div></div>
+
+<div id="pvbar"><button class="btn" data-act="s-save">حفظ</button><button class="btn ghost" data-act="s-cancel">إلغاء</button></div>
+
+<div id="oldbrowser" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:#e3c58f;color:#1d1608;padding:10px 16px;font:16px sans-serif;text-align:center">متصفحك قديم وقد لا يعمل التطبيق كاملاً. حدّث المتصفح أو افتح الرابط بمتصفح Chrome أو Firefox أحدث.</div>
+<script src="compat.js"></script>
+<script src="hls.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

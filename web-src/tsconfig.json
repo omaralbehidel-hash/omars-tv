@@ -1,0 +1,1 @@
+{"compilerOptions":{"allowJs":true,"checkJs":false,"target":"ES5","lib":["ES2017","DOM","DOM.Iterable"],"downlevelIteration":true,"noEmitOnError":false,"outDir":"out","skipLibCheck":true,"removeComments":true},"files":["app.js"]}
