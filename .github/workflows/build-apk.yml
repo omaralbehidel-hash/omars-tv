@@ -5,6 +5,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,3 +26,11 @@ jobs:
         with:
           name: OMARS-TV-apk
           path: app/build/outputs/apk/debug/*.apk
+      - name: Rename APK
+        run: cp app/build/outputs/apk/debug/*.apk OMARS-TV.apk
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: OMAR'S TV (latest APK)
+          files: OMARS-TV.apk
