@@ -157,7 +157,13 @@ var DEFAULT_LISTS = function () { return ({
         mk('الجزيرة 2', 'أخبار', 'https://live-hls-web-aja2-gcp.thehlive.com/AJA2/index.m3u8', H),
         mk('العربية', 'أخبار', 'https://av.alarabiya.net/alarabiapublish/alarabiya.smil/playlist.m3u8', H),
         mk('الحدث', 'أخبار', 'https://av.alarabiya.net/alarabiapublish/alhadath.smil/playlist.m3u8', H),
-        mk('Sky News Arabia', 'أخبار', 'https://stream.skynewsarabia.com/hls/sna.m3u8', H)
+        mk('Sky News Arabia', 'أخبار', 'https://stream.skynewsarabia.com/hls/sna.m3u8', H),
+        mk('القرآن الكريم (يوتيوب)', 'يوتيوب', YT + 'channel/UCos52azQNBgW63_9uDJoPDA'),
+        mk('السنة النبوية (يوتيوب)', 'يوتيوب', YT + 'channel/UCNF8YJDral7UmSisQ5XZMGw'),
+        mk('الجزيرة (يوتيوب)', 'يوتيوب', YT + 'channel/UCfiwzLy-8yKzIbsmZTzxDgw'),
+        mk('العربية (يوتيوب)', 'يوتيوب', YT + 'channel/UCrj5BGAhtWxDfqbza9T9hqA'),
+        mk('الحدث (يوتيوب)', 'يوتيوب', YT + 'channel/UCYcogyJ0RBPHvfw3X-5L0bQ'),
+        mk('سكاي نيوز عربية (يوتيوب)', 'يوتيوب', YT + 'channel/UCIJXOvggjKtCagMfxvcCzAA')
     ],
     radio: [
         mk('إذاعة نداء الإسلام', 'إذاعة', K + 'sbrksanedaradiolive/ksanedaradio/playlist.m3u8', 'audio'),
@@ -176,11 +182,11 @@ var DEFAULT_LISTS = function () { return ({
 var L = store.get('lists', null);
 if (!L || !Array.isArray(L.tv) || !Array.isArray(L.radio))
     L = DEFAULT_LISTS();
-if (store.get('lists.v', 0) < 7) {
+if (store.get('lists.v', 0) < 8) {
     var old_1 = new Set(['الجزيرة 2 (مباشر)', 'قناة القرآن الكريم (مكة المكرمة)', 'قناة السنة النبوية (المدينة المنورة)', 'الجزيرة 1', 'الجزيرة 2', 'العربية', 'الحدث', 'الشرق للأخبار', 'BBC News عربي', 'Sky News Arabia', 'إذاعة نداء الإسلام', 'إذاعة القرآن الكريم', 'قناة القرآن الكريم (يوتيوب)', 'قناة السنة النبوية (يوتيوب)', 'الشرق للأخبار (يوتيوب)', 'BBC News عربي (يوتيوب)']);
     var def_1 = DEFAULT_LISTS();
     ['tv', 'radio'].forEach(function (k) { L[k] = def_1[k].concat(L[k].filter(function (c) { return !old_1.has(c.n) && !def_1[k].some(function (d) { return d.n === c.n; }); })); });
-    store.set('lists.v', 7);
+    store.set('lists.v', 8);
     store.set('lists', L);
     store.set('last', null);
 }

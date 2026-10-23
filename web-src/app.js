@@ -63,7 +63,13 @@ const DEFAULT_LISTS = () => ({
     mk('الجزيرة 2', 'أخبار', 'https://live-hls-web-aja2-gcp.thehlive.com/AJA2/index.m3u8', H),
     mk('العربية', 'أخبار', 'https://av.alarabiya.net/alarabiapublish/alarabiya.smil/playlist.m3u8', H),
     mk('الحدث', 'أخبار', 'https://av.alarabiya.net/alarabiapublish/alhadath.smil/playlist.m3u8', H),
-    mk('Sky News Arabia', 'أخبار', 'https://stream.skynewsarabia.com/hls/sna.m3u8', H)
+    mk('Sky News Arabia', 'أخبار', 'https://stream.skynewsarabia.com/hls/sna.m3u8', H),
+    mk('القرآن الكريم (يوتيوب)', 'يوتيوب', YT + 'channel/UCos52azQNBgW63_9uDJoPDA'),
+    mk('السنة النبوية (يوتيوب)', 'يوتيوب', YT + 'channel/UCNF8YJDral7UmSisQ5XZMGw'),
+    mk('الجزيرة (يوتيوب)', 'يوتيوب', YT + 'channel/UCfiwzLy-8yKzIbsmZTzxDgw'),
+    mk('العربية (يوتيوب)', 'يوتيوب', YT + 'channel/UCrj5BGAhtWxDfqbza9T9hqA'),
+    mk('الحدث (يوتيوب)', 'يوتيوب', YT + 'channel/UCYcogyJ0RBPHvfw3X-5L0bQ'),
+    mk('سكاي نيوز عربية (يوتيوب)', 'يوتيوب', YT + 'channel/UCIJXOvggjKtCagMfxvcCzAA')
   ],
   radio: [
     mk('إذاعة نداء الإسلام', 'إذاعة', K + 'sbrksanedaradiolive/ksanedaradio/playlist.m3u8', 'audio'),
@@ -82,11 +88,11 @@ const DEFAULT_LISTS = () => ({
 let L = store.get('lists', null);
 if (!L || !Array.isArray(L.tv) || !Array.isArray(L.radio)) L = DEFAULT_LISTS();
 // ترقية 5: بث مباشر من المصدر الرسمي بدل يوتيوب. نحتفظ بما أضافه المستخدم فقط
-if (store.get('lists.v', 0) < 7) {
+if (store.get('lists.v', 0) < 8) {
   const old = new Set(['الجزيرة 2 (مباشر)','قناة القرآن الكريم (مكة المكرمة)','قناة السنة النبوية (المدينة المنورة)','الجزيرة 1','الجزيرة 2','العربية','الحدث','الشرق للأخبار','BBC News عربي','Sky News Arabia','إذاعة نداء الإسلام','إذاعة القرآن الكريم','قناة القرآن الكريم (يوتيوب)','قناة السنة النبوية (يوتيوب)','الشرق للأخبار (يوتيوب)','BBC News عربي (يوتيوب)']);
   const def = DEFAULT_LISTS();
   ['tv', 'radio'].forEach(k => { L[k] = def[k].concat(L[k].filter(c => !old.has(c.n) && !def[k].some(d => d.n === c.n))); });
-  store.set('lists.v', 7); store.set('lists', L); store.set('last', null);
+  store.set('lists.v', 8); store.set('lists', L); store.set('last', null);
 }
 const saveLists = () => store.set('lists', L);
 
