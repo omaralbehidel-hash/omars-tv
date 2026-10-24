@@ -29,6 +29,7 @@ key KEYCODE_DPAD_UP
 key KEYCODE_DPAD_UP
 key KEYCODE_DPAD_UP
 shot 06_after
+adb logcat -d -s OMARSDBG > shots/dbg.txt
 adb logcat -d -t 3000 > shots/logcat.txt
 adb logcat -d -b crash > shots/crash.txt
 adb shell dumpsys activity activities | grep -i "mResumedActivity" > shots/resumed.txt

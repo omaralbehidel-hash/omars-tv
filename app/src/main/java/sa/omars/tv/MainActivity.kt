@@ -160,6 +160,9 @@ class MainActivity : Activity(), PlayerEvents {
         hideSystemUi()
         vol = S.vol
         buildUi()
+        if (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+            root.postDelayed({ dbgDump(root, 0) }, 9000)
+        }
         host = PlayerHost(this, surface, web, this)
         host.setVolume(vol)
         sheets = Sheets(this)
@@ -228,6 +231,14 @@ class MainActivity : Activity(), PlayerEvents {
     // =====================================================================
     //  بناء الواجهة
     // =====================================================================
+    private fun dbgDump(v: View, d: Int) {
+        val loc = IntArray(2)
+        v.getLocationOnScreen(loc)
+        val t = if (v is TextView) " '" + v.text.toString().take(14) + "' tw=" + v.paint.measureText(v.text.toString()).toInt() else ""
+        android.util.Log.d("OMARSDBG", "  ".repeat(d) + v.javaClass.simpleName + " x=" + loc[0] + " y=" + loc[1] + " w=" + v.width + " h=" + v.height + " mw=" + v.measuredWidth + t)
+        if (v is ViewGroup && v !is WebView && d < 7) for (i in 0 until v.childCount) dbgDump(v.getChildAt(i), d + 1)
+    }
+
     private fun buildUi() {
         val rem = U.rem
         root = FrameLayout(this)
