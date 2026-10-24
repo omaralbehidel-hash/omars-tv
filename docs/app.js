@@ -100,13 +100,19 @@ var store = {
 };
 var DEFAULTS = {
     h24: false, secs: true, date: true, wx: true, prayers: true, list: true, listLeft: false,
-    fx: false, burn: true, digits: true, autoplay: true, alert: true, beep: false, sleepFx: true, boot: false,
+    fx: false, burn: true, digits: true, autoplay: false, lite: true, alert: true, beep: false, sleepFx: true, boot: false,
     clock: 1, listw: 20, dim: 0.25, hijri: 0, vol: 80,
     q: 'auto', acc: 'gold', city: 'madinah', unit: 'c', method: 4, asr: 0, gps: null
 };
 var S = Object.assign({}, DEFAULTS, store.get('settings', {}));
 if (!['gold', 'blue', 'orange', 'white'].includes(S.acc) || S.acc === 'blue')
     S.acc = 'gold';
+if (store.get('settings.v', 0) < 2) {
+    S.autoplay = false;
+    S.lite = true;
+    store.set('settings', S);
+    store.set('settings.v', 2);
+}
 var SAVED = Object.assign({}, S);
 var CITIES = [
     { id: 'madinah', n: 'المدينة المنورة', lat: 24.4686, lon: 39.6142, tz: 'Asia/Riyadh' },
@@ -381,7 +387,7 @@ function ytFallback(it, tok) {
 function startYT(it, tok) {
     var r = parseYT(it.u);
     var base = r.id ? 'https://www.youtube.com/embed/' + r.id + '?' : 'https://www.youtube.com/embed/live_stream?channel=' + r.ch + '&';
-    var src = base + 'autoplay=1&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&hl=ar&vq=hd1080&enablejsapi=1' + (/^https?:/.test(location.origin) ? '&origin=' + encodeURIComponent(location.origin) : '');
+    var src = base + 'autoplay=1&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&hl=ar&enablejsapi=1' + (S.q === 'max' ? '&vq=hd1080' : S.q === 'low' ? '&vq=medium' : '') + (/^https?:/.test(location.origin) ? '&origin=' + encodeURIComponent(location.origin) : '');
     var f = document.createElement('iframe');
     f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
     f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
@@ -450,7 +456,8 @@ window.addEventListener('message', function (e) {
             P.buffering = false;
             P.playing = true;
             hideOverlay();
-            ytSend('setPlaybackQuality', [S.q === 'low' ? 'medium' : 'hd1080']);
+            if (S.q !== 'auto')
+                ytSend('setPlaybackQuality', [S.q === 'low' ? 'medium' : 'hd1080']);
             ytSend('setVolume', [P.vol]);
             ytSend(P.muted ? 'mute' : 'unMute');
         }
@@ -676,6 +683,22 @@ function step(d) {
             break;
     }
     play(P.mode, i);
+}
+var zapT = 0, zapIdx = null;
+function zap(d) {
+    var arr = L[P.mode];
+    if (!arr.length)
+        return;
+    var i = zapIdx != null ? zapIdx : P.idx[P.mode];
+    for (var n = 0; n < arr.length; n++) {
+        i = (i + d + arr.length) % arr.length;
+        if (!P.fav[P.mode] || arr[i].f)
+            break;
+    }
+    zapIdx = i;
+    toast(arr[i].n, 1800);
+    clearTimeout(zapT);
+    zapT = setTimeout(function () { var j = zapIdx; zapIdx = null; play(P.mode, j); }, 650);
 }
 function setMode(m, silent) {
     P.mode = m;
@@ -1074,7 +1097,7 @@ var viz = $('#viz'), vx = viz.getContext('2d');
 var vlast = 0;
 function drawViz(t) {
     requestAnimationFrame(drawViz);
-    if (t - vlast < 40)
+    if (t - vlast < (S.lite ? 90 : 40))
         return;
     vlast = t;
     var visible = (document.body.classList.contains('aud') || P.mode === 'radio') && !document.body.classList.contains('sleeping') && !document.hidden;
@@ -1181,7 +1204,7 @@ var CFG = [
     { k: 'clock', l: 'حجم الساعة', t: 'n', min: .7, max: 1.4, st: .1 }, { k: 'listw', l: 'عرض قائمة القنوات', t: 'n', min: 14, max: 28, st: 2 },
     { k: 'listLeft', l: 'موضع القائمة', t: 'c', o: [[false, 'يمين'], [true, 'يسار']] },
     { k: 'acc', l: 'لون التمييز', t: 'c', o: [['gold', 'ذهبي'], ['blue', 'أزرق'], ['orange', 'برتقالي'], ['white', 'أبيض']] },
-    { k: 'fx', l: 'خلفية النجوم المتحركة', t: 't' }, { k: 'burn', l: 'منع احتراق الشاشة (إزاحة بطيئة)', t: 't' },
+    { k: 'lite', l: 'وضع الأداء الخفيف (تنقل أسرع على التلفزيونات الضعيفة)', t: 't' }, { k: 'fx', l: 'خلفية النجوم المتحركة', t: 't' }, { k: 'burn', l: 'منع احتراق الشاشة (إزاحة بطيئة)', t: 't' },
     { g: 'المدينة والمواقيت' },
     { k: 'city', l: 'المدينة', t: 'c', o: CITIES.map(function (c) { return [c.id, c.n]; }) },
     { k: 'method', l: 'طريقة حساب الصلاة', t: 'c', o: METHODS },
@@ -1250,6 +1273,7 @@ function applySettings() {
     b.classList.toggle('nolist', !c.list);
     b.classList.toggle('listleft', !!c.listLeft);
     b.classList.toggle('fx', !!c.fx);
+    b.classList.toggle('lite', !!c.lite);
     b.classList.remove('acc-blue', 'acc-orange', 'acc-white');
     if (c.acc === 'blue' || c.acc === 'orange' || c.acc === 'white')
         b.classList.add('acc-' + c.acc);
@@ -1753,12 +1777,12 @@ document.addEventListener('keydown', function (e) {
     }
     if (k === 'ChannelUp' || k === 'PageUp') {
         e.preventDefault();
-        step(-1);
+        zap(-1);
         return;
     }
     if (k === 'ChannelDown' || k === 'PageDown') {
         e.preventDefault();
-        step(1);
+        zap(1);
         return;
     }
     if (k === 'Escape' || k === 'GoBack' || k === 'BrowserBack' || (k === 'Backspace' && !typing)) {
@@ -1769,14 +1793,12 @@ document.addEventListener('keydown', function (e) {
     if (b.classList.contains('full') && !openSheetId) {
         if (k === 'ArrowUp') {
             e.preventDefault();
-            step(-1);
-            toast((cur() || {}).n || '', 1800);
+            zap(-1);
             return;
         }
         if (k === 'ArrowDown') {
             e.preventDefault();
-            step(1);
-            toast((cur() || {}).n || '', 1800);
+            zap(1);
             return;
         }
         if (k === 'ArrowLeft' || k === 'ArrowRight') {
@@ -1858,7 +1880,7 @@ function init() {
     render();
     ui();
     tickClock();
-    setInterval(tickClock, 500);
+    setInterval(tickClock, 1000);
     setInterval(function () { tickPrayers(); tickTimer(); }, 1000);
     setInterval(shiftTick, 60000);
     refreshTimes();
@@ -1874,8 +1896,13 @@ function init() {
 }
 function autoStart() {
     if (!S.autoplay) {
-        var f = $('#list .item.cur') || $('.ib');
-        f && f.focus();
+        var m0_1 = P.mode, i0_1 = P.idx[m0_1], c0 = L[m0_1][i0_1];
+        if (c0)
+            showOverlay(c0.n, 'اضغط «موافق» لتشغيل القناة، أو اختر قناة أخرى من القائمة.', 'تشغيل', function () { return play(m0_1, i0_1); }, '', null);
+        else {
+            var f = $('#list .item.cur') || $('.ib');
+            f && f.focus();
+        }
         return;
     }
     var m = P.mode, arr = L[m];

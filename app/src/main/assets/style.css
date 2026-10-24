@@ -194,3 +194,14 @@ body.pv .sheet{display:none!important}
 .nogap #sleepin>*+*{margin-top:1.4rem}
 .nogap .sclock>*+*{margin-left:.6rem}
 .nogap .sp>*+*{margin-right:2.4rem}
+
+/* وضع الأداء الخفيف */
+body.lite,body.lite #splash{background:#000}
+body.lite *,body.lite *:before,body.lite *:after{transition:none!important;animation:none!important;box-shadow:none!important;text-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+body.lite .item,body.lite .pill,body.lite .ib,body.lite .pc,body.lite .btn.ghost,body.lite .seg,body.lite .mrow .nmx,body.lite .mrow button.sm,body.lite .mini{background:#1c1c1e!important}
+body.lite .item.cur,body.lite .pc.next{background:#2b2417!important}
+body.lite .ib.big,body.lite .btn:not(.ghost),body.lite .ib.on,body.lite .seg button.on{background:var(--gold)!important}
+body.lite button:focus,body.lite .pill:focus,body.lite input:focus,body.lite textarea:focus{transform:none!important;box-shadow:none!important;outline:.2rem solid #fff!important;outline-offset:.1rem}
+body.lite .ctrls{background:rgba(0,0,0,.65)}
+body.lite .panel,body.lite #sheet-settings .panel>h2,body.lite #sheet-settings .panel>.actions{background:#1c1c1e!important}
+body.lite .overlay{background:#000}

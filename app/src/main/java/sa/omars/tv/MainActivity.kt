@@ -116,6 +116,7 @@ class MainActivity : Activity() {
     }
 
     @Volatile private var typing = false
+    private var lastNav = 0L
 
     /** مفاتيح الريموت: الأسهم والموافق تُمرَّر مباشرة للواجهة (حتى لا يأخذها مشغّل يوتيوب). */
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
@@ -129,6 +130,9 @@ class MainActivity : Activity() {
         }
         if (nav != null && !typing) {
             if (event.action == KeyEvent.ACTION_DOWN) {
+                val now = android.os.SystemClock.uptimeMillis()
+                if (event.repeatCount > 0 && (nav == "Enter" || now - lastNav < 130)) return true
+                lastNav = now
                 web.evaluateJavascript("window.omarsDpad && window.omarsDpad('$nav')", null)
             }
             return true
