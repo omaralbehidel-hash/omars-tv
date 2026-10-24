@@ -8,6 +8,7 @@ sleep 15
 shot(){ adb exec-out screencap -p > "shots/$1.png"; }
 key(){ adb shell input keyevent "$1"; sleep 1.2; }
 shot 01_start
+adb shell uiautomator dump /sdcard/ui1.xml >/dev/null 2>&1; adb pull /sdcard/ui1.xml shots/ui1.xml >/dev/null 2>&1
 key KEYCODE_DPAD_CENTER
 sleep 25
 shot 02_playing
@@ -17,6 +18,7 @@ shot 03_nav
 key KEYCODE_MENU
 sleep 2
 shot 04_settings
+adb shell uiautomator dump /sdcard/ui4.xml >/dev/null 2>&1; adb pull /sdcard/ui4.xml shots/ui4.xml >/dev/null 2>&1
 key KEYCODE_DPAD_DOWN
 key KEYCODE_DPAD_DOWN
 shot 05_settings_nav
