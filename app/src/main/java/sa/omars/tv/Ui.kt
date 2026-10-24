@@ -145,26 +145,43 @@ fun flp(w: Int, h: Int, g: Int = Gravity.NO_GRAVITY) = FrameLayout.LayoutParams(
 const val MATCH = ViewGroup.LayoutParams.MATCH_PARENT
 const val WRAP = ViewGroup.LayoutParams.WRAP_CONTENT
 
-fun hbox(ctx: Context, gapRem: Float = 0f): LinearLayout {
-    val l = LinearLayout(ctx)
-    l.orientation = LinearLayout.HORIZONTAL
-    l.gravity = Gravity.CENTER_VERTICAL
-    if (gapRem > 0) {
-        l.showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
-        l.dividerDrawable = gap(U.r(gapRem), 1)
+/** LinearLayout بفواصل عبر الهوامش (الفواصل الأصلية لا تُحسب في الأوزان مع RTL فتنزاح الصفوف). */
+class GapBox(ctx: Context, private val horiz: Boolean, private val gapPx: Int) : LinearLayout(ctx) {
+    class GP(src: ViewGroup.LayoutParams) : LinearLayout.LayoutParams(src) {
+        var applied = 0
+        init {
+            if (src is ViewGroup.MarginLayoutParams) {
+                setMargins(src.leftMargin, src.topMargin, src.rightMargin, src.bottomMargin)
+            }
+            if (src is LinearLayout.LayoutParams) {
+                weight = src.weight
+                gravity = src.gravity
+            }
+        }
     }
+
+    init {
+        orientation = if (horiz) HORIZONTAL else VERTICAL
+    }
+
+    override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams?) {
+        val base = params ?: generateDefaultLayoutParams()
+        val p = base as? GP ?: GP(base)
+        val want = if (childCount == 0 || index == 0) 0 else gapPx
+        if (horiz) p.marginStart = p.marginStart - p.applied + want
+        else p.topMargin = p.topMargin - p.applied + want
+        p.applied = want
+        super.addView(child, index, p)
+    }
+}
+
+fun hbox(ctx: Context, gapRem: Float = 0f): LinearLayout {
+    val l = GapBox(ctx, true, U.r(gapRem))
+    l.gravity = Gravity.CENTER_VERTICAL
     return l
 }
 
-fun vbox(ctx: Context, gapRem: Float = 0f): LinearLayout {
-    val l = LinearLayout(ctx)
-    l.orientation = LinearLayout.VERTICAL
-    if (gapRem > 0) {
-        l.showDividers = LinearLayout.SHOW_DIVIDER_MIDDLE
-        l.dividerDrawable = gap(1, U.r(gapRem))
-    }
-    return l
-}
+fun vbox(ctx: Context, gapRem: Float = 0f): LinearLayout = GapBox(ctx, false, U.r(gapRem))
 
 fun gap(w: Int, h: Int): GradientDrawable {
     val g = GradientDrawable()
