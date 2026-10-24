@@ -34,6 +34,7 @@
       <button class="ib" data-act="sheet" data-s="manage" aria-label="إدارة القنوات" title="إدارة القنوات"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></button>
       <button class="ib" data-act="sheet" data-s="settings" aria-label="الإعدادات" title="الإعدادات"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></button>
       <button class="ib" data-act="full" aria-label="ملء الشاشة" title="ملء الشاشة"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      <button class="ib" data-act="quit" aria-label="إغلاق البرنامج" title="إغلاق البرنامج"><svg viewBox="0 0 24 24"><path d="M12 3v8"/><path d="M6.4 6.6a8 8 0 1 0 11.2 0"/></svg></button>
       <img class="mark" src="logo-symbol.png" alt="OMAR'S">
     </nav>
   </header>
@@ -91,6 +92,7 @@
       <button class="btn ghost" data-act="s-reset">استعادة الافتراضي</button>
       <button class="btn ghost" data-act="s-export">تصدير</button>
       <button class="btn ghost" data-act="s-import">استيراد</button>
+      <button class="btn ghost" data-act="quit">إغلاق البرنامج</button>
     </div>
     <div class="rows" id="srows"></div>
     <textarea id="io" rows="4" dir="ltr" placeholder="الصق الإعدادات هنا ثم اضغط استيراد" style="display:none"></textarea>
@@ -148,7 +150,6 @@
 
 <div id="oldbrowser" style="display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:#e3c58f;color:#1d1608;padding:10px 16px;font:16px sans-serif;text-align:center">متصفحك قديم وقد لا يعمل التطبيق كاملاً. حدّث المتصفح أو افتح الرابط بمتصفح Chrome أو Firefox أحدث.</div>
 <script src="compat.js"></script>
-<script src="hls.min.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

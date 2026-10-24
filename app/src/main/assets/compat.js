@@ -11,3 +11,5 @@ if(window.Element&&!Element.prototype.closest)Element.prototype.closest=function
 if(window.NodeList&&!NodeList.prototype.forEach)NodeList.prototype.forEach=A.forEach;
 window.addEventListener('error',function(e){var b=document.getElementById('oldbrowser');if(b&&!window.__appOk){b.style.display='block'}});
 })();
+
+(function(){try{var d=document.createElement('div');d.style.cssText='display:flex;flex-direction:column;row-gap:1px;position:absolute;visibility:hidden';d.innerHTML='<i></i><i></i>';d.firstChild.style.height='1px';d.lastChild.style.height='1px';(document.body||document.documentElement).appendChild(d);var ok=d.scrollHeight===3;d.parentNode.removeChild(d);if(!ok)document.documentElement.className+=' nogap';}catch(e){}})();

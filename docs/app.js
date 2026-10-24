@@ -148,22 +148,17 @@ var mk = function (n, c, u, t) {
     return ({ n: n, c: c, u: u, t: t, l: '', v: 80, f: false });
 };
 var YT = 'https://www.youtube.com/';
+var ytc = function (n, c, id, fb) { var o = mk(n, c, YT + 'channel/' + id); o.fb = fb || ''; return o; };
 var H = 'hls', Q = 'https://qurango.net/radio/', K = 'https://live.kwikmotion.com/';
 var DEFAULT_LISTS = function () { return ({
     tv: [
-        mk('قناة القرآن الكريم', 'إسلامية', 'https://cdn-globecast.akamaized.net/live/eds/saudi_quran/hls_roku/index.m3u8', H),
-        mk('قناة السنة النبوية', 'إسلامية', 'https://cdn-globecast.akamaized.net/live/eds/saudi_sunnah/hls_roku/index.m3u8', H),
-        mk('الجزيرة', 'أخبار', 'https://live-hls-web-aja.getaj.net/AJA/index.m3u8', H),
+        ytc('القرآن الكريم', 'إسلامية', 'UCos52azQNBgW63_9uDJoPDA', 'https://cdn-globecast.akamaized.net/live/eds/saudi_quran/hls_roku/index.m3u8'),
+        ytc('السنة النبوية', 'إسلامية', 'UCNF8YJDral7UmSisQ5XZMGw', 'https://cdn-globecast.akamaized.net/live/eds/saudi_sunnah/hls_roku/index.m3u8'),
+        ytc('الجزيرة', 'أخبار', 'UCfiwzLy-8yKzIbsmZTzxDgw', 'https://live-hls-web-aja.getaj.net/AJA/index.m3u8'),
         mk('الجزيرة 2', 'أخبار', 'https://live-hls-web-aja2-gcp.thehlive.com/AJA2/index.m3u8', H),
-        mk('العربية', 'أخبار', 'https://av.alarabiya.net/alarabiapublish/alarabiya.smil/playlist.m3u8', H),
-        mk('الحدث', 'أخبار', 'https://av.alarabiya.net/alarabiapublish/alhadath.smil/playlist.m3u8', H),
-        mk('Sky News Arabia', 'أخبار', 'https://stream.skynewsarabia.com/hls/sna.m3u8', H),
-        mk('القرآن الكريم (يوتيوب)', 'يوتيوب', YT + 'channel/UCos52azQNBgW63_9uDJoPDA'),
-        mk('السنة النبوية (يوتيوب)', 'يوتيوب', YT + 'channel/UCNF8YJDral7UmSisQ5XZMGw'),
-        mk('الجزيرة (يوتيوب)', 'يوتيوب', YT + 'channel/UCfiwzLy-8yKzIbsmZTzxDgw'),
-        mk('العربية (يوتيوب)', 'يوتيوب', YT + 'channel/UCrj5BGAhtWxDfqbza9T9hqA'),
-        mk('الحدث (يوتيوب)', 'يوتيوب', YT + 'channel/UCYcogyJ0RBPHvfw3X-5L0bQ'),
-        mk('سكاي نيوز عربية (يوتيوب)', 'يوتيوب', YT + 'channel/UCIJXOvggjKtCagMfxvcCzAA')
+        ytc('العربية', 'أخبار', 'UCrj5BGAhtWxDfqbza9T9hqA', 'https://av.alarabiya.net/alarabiapublish/alarabiya.smil/playlist.m3u8'),
+        ytc('الحدث', 'أخبار', 'UCYcogyJ0RBPHvfw3X-5L0bQ', 'https://av.alarabiya.net/alarabiapublish/alhadath.smil/playlist.m3u8'),
+        ytc('سكاي نيوز عربية', 'أخبار', 'UCIJXOvggjKtCagMfxvcCzAA', 'https://stream.skynewsarabia.com/hls/sna.m3u8')
     ],
     radio: [
         mk('إذاعة نداء الإسلام', 'إذاعة', K + 'sbrksanedaradiolive/ksanedaradio/playlist.m3u8', 'audio'),
@@ -182,11 +177,13 @@ var DEFAULT_LISTS = function () { return ({
 var L = store.get('lists', null);
 if (!L || !Array.isArray(L.tv) || !Array.isArray(L.radio))
     L = DEFAULT_LISTS();
-if (store.get('lists.v', 0) < 8) {
-    var old_1 = new Set(['الجزيرة 2 (مباشر)', 'قناة القرآن الكريم (مكة المكرمة)', 'قناة السنة النبوية (المدينة المنورة)', 'الجزيرة 1', 'الجزيرة 2', 'العربية', 'الحدث', 'الشرق للأخبار', 'BBC News عربي', 'Sky News Arabia', 'إذاعة نداء الإسلام', 'إذاعة القرآن الكريم', 'قناة القرآن الكريم (يوتيوب)', 'قناة السنة النبوية (يوتيوب)', 'الشرق للأخبار (يوتيوب)', 'BBC News عربي (يوتيوب)']);
+if (store.get('lists.v', 0) < 9) {
+    var old_1 = new Set(['قناة القرآن الكريم', 'قناة السنة النبوية', 'الجزيرة', 'الجزيرة 2', 'العربية', 'الحدث', 'Sky News Arabia', 'القرآن الكريم (يوتيوب)', 'السنة النبوية (يوتيوب)', 'الجزيرة (يوتيوب)', 'العربية (يوتيوب)', 'الحدث (يوتيوب)', 'سكاي نيوز عربية (يوتيوب)', 'الجزيرة 1', 'الشرق للأخبار', 'BBC News عربي', 'قناة القرآن الكريم (مكة المكرمة)', 'قناة السنة النبوية (المدينة المنورة)', 'الجزيرة 2 (مباشر)', 'قناة القرآن الكريم (يوتيوب)', 'قناة السنة النبوية (يوتيوب)', 'الشرق للأخبار (يوتيوب)', 'BBC News عربي (يوتيوب)']);
     var def_1 = DEFAULT_LISTS();
-    ['tv', 'radio'].forEach(function (k) { L[k] = def_1[k].concat(L[k].filter(function (c) { return !old_1.has(c.n) && !def_1[k].some(function (d) { return d.n === c.n; }); })); });
-    store.set('lists.v', 8);
+    L.tv = def_1.tv.concat(L.tv.filter(function (c) { return !old_1.has(c.n) && !def_1.tv.some(function (d) { return d.n === c.n; }); }));
+    var rn_1 = new Set(['إذاعة نداء الإسلام', 'إذاعة القرآن الكريم']);
+    L.radio = def_1.radio.concat(L.radio.filter(function (c) { return !rn_1.has(c.n) && !def_1.radio.some(function (d) { return d.n === c.n; }); }));
+    store.set('lists.v', 9);
     store.set('lists', L);
     store.set('last', null);
 }
@@ -370,10 +367,21 @@ function ytSend(func, args) {
     }
     catch (e) { }
 }
+function ytFallback(it, tok) {
+    if (!it || !it.fb || P.kind !== 'yt' || tok !== P.token)
+        return false;
+    $('#viewport').innerHTML = '';
+    P.kind = 'hls';
+    P.buffering = true;
+    P.rt = 0;
+    toast('تم التحويل تلقائيًا إلى البث الاحتياطي', 2500);
+    startVideo({ n: it.n, u: it.fb, t: 'hls' }, tok);
+    return true;
+}
 function startYT(it, tok) {
     var r = parseYT(it.u);
     var base = r.id ? 'https://www.youtube.com/embed/' + r.id + '?' : 'https://www.youtube.com/embed/live_stream?channel=' + r.ch + '&';
-    var src = base + 'autoplay=1&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&enablejsapi=1' + (/^https?:/.test(location.origin) ? '&origin=' + encodeURIComponent(location.origin) : '');
+    var src = base + 'autoplay=1&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&hl=ar&vq=hd1080&enablejsapi=1' + (/^https?:/.test(location.origin) ? '&origin=' + encodeURIComponent(location.origin) : '');
     var f = document.createElement('iframe');
     f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
     f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
@@ -394,8 +402,11 @@ function startYT(it, tok) {
     };
     $('#viewport').appendChild(f);
     P.el = null;
-    later(function () { if (P.buffering)
-        failure(tok, 'تعذر بدء البث', 'لم يبدأ التشغيل خلال المهلة. قد لا تكون القناة مباشرة الآن، أو يمنع المالك تشغيلها خارج يوتيوب. تحقق من الرابط من «إدارة القنوات».'); }, 25000);
+    later(function () { if (P.buffering) {
+        if (ytFallback(it, tok))
+            return;
+        failure(tok, 'تعذر بدء البث', 'لم يبدأ التشغيل خلال المهلة. قد لا تكون القناة مباشرة الآن، أو يمنع المالك تشغيلها خارج يوتيوب. تحقق من الرابط من «إدارة القنوات».');
+    } }, it.fb ? 14000 : 25000, tok);
 }
 window.addEventListener('message', function (e) {
     if (P.kind !== 'yt' || !/youtube(-nocookie)?\.com$/.test(new URL(e.origin === 'null' ? 'http://x' : e.origin).hostname))
@@ -414,6 +425,11 @@ window.addEventListener('message', function (e) {
     var tok = P.token;
     if (d.event === 'onError') {
         var c = +d.info;
+        {
+            var it0 = L[P.mode][P.idx[P.mode]];
+            if (ytFallback(it0, tok))
+                return;
+        }
         var msg = (c === 101 || c === 150 || c === 153) ? 'صاحب القناة لا يسمح بتشغيل هذا البث خارج يوتيوب. استخدم رابط البث الرسمي المتوافق من «إدارة القنوات».'
             : (c === 100 ? 'هذا الفيديو غير متاح أو لم يعد مباشرًا.' : 'الرابط غير صالح للتشغيل.');
         if (c === 101 || c === 150 || c === 153) {
@@ -434,6 +450,7 @@ window.addEventListener('message', function (e) {
             P.buffering = false;
             P.playing = true;
             hideOverlay();
+            ytSend('setPlaybackQuality', [S.q === 'low' ? 'medium' : 'hd1080']);
             ytSend('setVolume', [P.vol]);
             ytSend(P.muted ? 'mute' : 'unMute');
         }
@@ -454,7 +471,22 @@ window.addEventListener('message', function (e) {
         ui();
     }
 });
+function loadHls(cb) {
+    if (window.Hls || window.__hlsTried)
+        return cb();
+    window.__hlsTried = true;
+    var sc = document.createElement('script');
+    sc.src = 'hls.min.js';
+    sc.onload = cb;
+    sc.onerror = cb;
+    document.head.appendChild(sc);
+}
 function startVideo(it, tok) {
+    if (/\.m3u8(\?|$)/i.test(it.u) && !window.Hls && !window.__hlsTried) {
+        loadHls(function () { if (tok === P.token)
+            startVideo(it, tok); });
+        return;
+    }
     var v = document.createElement('video');
     v.playsInline = true;
     v.autoplay = true;
@@ -502,7 +534,26 @@ function startAudio(it, tok, noCors) {
     a.volume = P.vol / 100;
     P.el = a;
     bindMedia(a, it, tok, noCors);
-    a.src = it.u;
+    if (/\.m3u8(\?|$)/i.test(it.u) && !window.Hls && !window.__hlsTried) {
+        loadHls(function () { if (tok === P.token)
+            startAudio(it, tok, noCors); });
+        return;
+    }
+    if (/\.m3u8(\?|$)/i.test(it.u) && window.Hls && Hls.isSupported()) {
+        var h_2 = new Hls({ maxBufferLength: 20, enableWorker: true });
+        P.hls = h_2;
+        h_2.loadSource(it.u);
+        h_2.attachMedia(a);
+        h_2.on(Hls.Events.ERROR, function (_, d) { if (tok !== P.token || !d.fatal)
+            return; if (d.type === Hls.ErrorTypes.NETWORK_ERROR)
+            retry(tok, function () { return h_2.startLoad(); });
+        else if (d.type === Hls.ErrorTypes.MEDIA_ERROR)
+            h_2.recoverMediaError();
+        else
+            failure(tok, 'تعذر تشغيل الإذاعة', 'الرابط غير صالح.'); });
+    }
+    else
+        a.src = it.u;
     a.play().catch(function () { });
 }
 function bindMedia(el, it, tok, noCors) {
@@ -1572,6 +1623,9 @@ document.addEventListener('click', function (e) {
         case 'sleepnow':
             enterSleep();
             break;
+        case 'quit':
+            quitApp();
+            break;
     }
 });
 var hotT = 0;
@@ -1651,6 +1705,13 @@ window.omarsBack = function () {
     exitArmed = Date.now();
     toast('اضغط Back مرة أخرى للخروج');
     return true;
+};
+window.omarsDpad = function (k) {
+    var t = document.activeElement || document.body;
+    var ev = new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true });
+    var res = t.dispatchEvent(ev);
+    if (k === 'Enter' && res && t.click && /^(BUTTON|A)$/.test(t.tagName))
+        t.click();
 };
 window.omarsKey = function (k) {
     if (k === 'playpause')
@@ -1744,6 +1805,24 @@ document.addEventListener('keydown', function (e) {
         document.activeElement.click();
     }
 });
+document.addEventListener('focusin', function (e) { try {
+    window.Android && Android.setTyping(/^(INPUT|TEXTAREA)$/.test(e.target.tagName));
+}
+catch (x) { } });
+document.addEventListener('focusout', function () { try {
+    window.Android && Android.setTyping(false);
+}
+catch (x) { } });
+function quitApp() { try {
+    if (window.Android && Android.exitApp) {
+        Android.exitApp();
+        return;
+    }
+}
+catch (x) { } try {
+    window.close();
+}
+catch (x) { } toast('يمكنك إغلاق التبويب أو المتصفح'); }
 window.addEventListener('scroll', function () { return window.scrollTo(0, 0); });
 try {
     for (var _b = __values(['app', 'shift']), _c = _b.next(); !_c.done; _c = _b.next()) {

@@ -54,6 +54,9 @@ class MainActivity : Activity() {
             allowContentAccess = false
             cacheMode = WebSettings.LOAD_DEFAULT
             textZoom = 100
+            setSupportZoom(false)
+            loadWithOverviewMode = false
+            useWideViewPort = false
         }
 
         val loader = WebViewAssetLoader.Builder()
@@ -98,6 +101,7 @@ class MainActivity : Activity() {
         }
 
         web.addJavascriptInterface(Bridge(), "Android")
+        web.requestFocus()
         web.loadUrl("https://$HOST/assets/index.html")
     }
 
@@ -111,8 +115,24 @@ class MainActivity : Activity() {
         }
     }
 
-    /** مفاتيح الوسائط في الريموت تُمرَّر إلى الواجهة. */
+    @Volatile private var typing = false
+
+    /** مفاتيح الريموت: الأسهم والموافق تُمرَّر مباشرة للواجهة (حتى لا يأخذها مشغّل يوتيوب). */
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        val nav = when (event.keyCode) {
+            KeyEvent.KEYCODE_DPAD_UP -> "ArrowUp"
+            KeyEvent.KEYCODE_DPAD_DOWN -> "ArrowDown"
+            KeyEvent.KEYCODE_DPAD_LEFT -> "ArrowLeft"
+            KeyEvent.KEYCODE_DPAD_RIGHT -> "ArrowRight"
+            KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER -> "Enter"
+            else -> null
+        }
+        if (nav != null && !typing) {
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                web.evaluateJavascript("window.omarsDpad && window.omarsDpad('$nav')", null)
+            }
+            return true
+        }
         if (event.action == KeyEvent.ACTION_DOWN) {
             val cmd = when (event.keyCode) {
                 KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, KeyEvent.KEYCODE_MEDIA_PLAY, KeyEvent.KEYCODE_MEDIA_PAUSE -> "playpause"
@@ -178,7 +198,12 @@ class MainActivity : Activity() {
 
         @JavascriptInterface
         fun exitApp() {
-            runOnUiThread { finish() }
+            runOnUiThread { finishAndRemoveTask() }
+        }
+
+        @JavascriptInterface
+        fun setTyping(on: Boolean) {
+            typing = on
         }
     }
 
