@@ -1,0 +1,123 @@
+--------- beginning of main
+--------- beginning of system
+10-24 17:08:25.048  2922  2922 D OMARSDBG: FrameLayout x=0 y=0 w=1920 h=1080 mw=1920
+10-24 17:08:25.048  2922  2922 D OMARSDBG:   FrameLayout x=0 y=0 w=1920 h=1080 mw=1920
+10-24 17:08:25.051  2922  2922 D OMARSDBG:     StarsView x=0 y=0 w=0 h=0 mw=0
+10-24 17:08:25.051  2922  2922 D OMARSDBG:     GapBox x=0 y=0 w=1920 h=1080 mw=1920
+10-24 17:08:25.051  2922  2922 D OMARSDBG:       GapBox x=58 y=36 w=1804 h=131 mw=1804
+10-24 17:08:25.051  2922  2922 D OMARSDBG:         GapBox x=1660 y=36 w=202 h=131 mw=202
+10-24 17:08:25.060  2922  2922 D OMARSDBG:           TextView x=1660 y=36 w=164 h=131 mw=164 '٠٨:٠٨' tw=164
+10-24 17:08:25.060  2922  2922 D OMARSDBG:           GapBox x=1834 y=52 w=28 h=98 mw=28
+10-24 17:08:25.060  2922  2922 D OMARSDBG:             TextView x=1834 y=64 w=28 h=43 mw=28 '٢٥' tw=25
+10-24 17:08:25.060  2922  2922 D OMARSDBG:             TextView x=1834 y=107 w=28 h=43 mw=28 'م' tw=16
+10-24 17:08:25.060  2922  2922 D OMARSDBG:         View x=1633 y=58 w=1 h=86 mw=1
+10-24 17:08:25.060  2922  2922 D OMARSDBG:         GapBox x=1283 y=59 w=324 h=85 mw=324
+10-24 17:08:25.060  2922  2922 D OMARSDBG:           TextView x=1283 y=59 w=324 h=55 mw=324 'السبت' tw=91
+10-24 17:08:25.061  2922  2922 D OMARSDBG:           TextView x=1283 y=114 w=324 h=30 mw=324 '٢٤ أكتوبر ٢٠٢٦' tw=324
+10-24 17:08:25.061  2922  2922 D OMARSDBG:         GapBox x=832 y=73 w=425 h=56 mw=425
+10-24 17:08:25.061  2922  2922 D OMARSDBG:           TextView x=1092 y=83 w=134 h=36 mw=134 'المدينة المنور' tw=134
+10-24 17:08:25.061  2922  2922 D OMARSDBG:           TextView x=863 y=84 w=210 h=33 mw=210 '٣١°م · صافٍ · ' tw=210
+10-24 17:08:25.061  2922  2922 D OMARSDBG:         View x=572 y=101 w=234 h=1 mw=234
+10-24 17:08:25.061  2922  2922 D OMARSDBG:         GapBox x=130 y=65 w=416 h=72 mw=416
+10-24 17:08:25.061  2922  2922 D OMARSDBG:           IBtn x=474 y=65 w=72 h=72 mw=72
+10-24 17:08:25.061  2922  2922 D OMARSDBG:           IBtn x=388 y=65 w=72 h=72 mw=72
+10-24 17:08:25.061  2922  2922 D OMARSDBG:           IBtn x=302 y=65 w=72 h=72 mw=72
+10-24 17:08:25.061  2922  2922 D OMARSDBG:           IBtn x=216 y=65 w=72 h=72 mw=72
+10-24 17:08:25.061  2922  2922 D OMARSDBG:           IBtn x=130 y=65 w=72 h=72 mw=72
+10-24 17:08:25.061  2922  2922 D OMARSDBG:         ImageView x=58 y=68 w=46 h=67 mw=46
+10-24 17:08:25.061  2922  2922 D OMARSDBG:       GapBox x=58 y=191 w=1804 h=693 mw=1804
+10-24 17:08:25.061  2922  2922 D OMARSDBG:         FrameLayout x=562 y=191 w=1300 h=693 mw=1300
+10-24 17:08:25.061  2922  2922 D OMARSDBG:           SurfaceView x=562 y=191 w=1300 h=693 mw=1300
+10-24 17:08:25.062  2922  2922 D OMARSDBG:           WebView x=562 y=191 w=0 h=0 mw=0
+10-24 17:08:25.062  2922  2922 D OMARSDBG:           GapBox x=562 y=191 w=0 h=0 mw=0
+10-24 17:08:25.062  2922  2922 D OMARSDBG:             ImageView x=562 y=191 w=0 h=0 mw=0
+10-24 17:08:25.068  2922  2922 D OMARSDBG:             TextView x=562 y=191 w=0 h=0 mw=0 'القرآن الكريم' tw=213
+10-24 17:08:25.068  2922  2922 D OMARSDBG:             VizView x=562 y=191 w=0 h=0 mw=0
+10-24 17:08:25.068  2922  2922 D OMARSDBG:             TextView x=562 y=191 w=0 h=0 mw=0 '' tw=0
+10-24 17:08:25.068  2922  2922 D OMARSDBG:           GapBox x=562 y=191 w=1300 h=693 mw=1300
+10-24 17:08:25.068  2922  2922 D OMARSDBG:             TextView x=1110 y=428 w=203 h=61 mw=203 'القرآن الكريم' tw=203
+10-24 17:08:25.068  2922  2922 D OMARSDBG:             TextView x=936 y=508 w=551 h=36 mw=551 'اضغط «موافق» ل' tw=551
+10-24 17:08:25.068  2922  2922 D OMARSDBG:             GapBox x=1147 y=577 w=130 h=70 mw=130
+10-24 17:08:25.068  2922  2922 D OMARSDBG:               Btn x=1147 y=577 w=130 h=70 mw=130 'تشغيل' tw=58
+10-24 17:08:25.068  2922  2922 D OMARSDBG:               Btn x=1147 y=577 w=0 h=0 mw=0 '' tw=0
+10-24 17:08:25.076  2922  2922 D OMARSDBG:           TextView x=562 y=191 w=0 h=0 mw=0 '●  مباشر' tw=68
+10-24 17:08:25.076  2922  2922 D OMARSDBG:           GapBox x=562 y=713 w=1300 h=171 mw=1300
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             IBtn x=1573 y=777 w=72 h=72 mw=72
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             IBtn x=1462 y=766 w=94 h=94 mw=94
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             IBtn x=1373 y=777 w=72 h=72 mw=72
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             IBtn x=1284 y=777 w=72 h=72 mw=72
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             Btn x=1181 y=778 w=86 h=70 mw=86 '−' tw=14
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             TextView x=1082 y=796 w=82 h=34 mw=82 '٨٠٪' tw=29
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             Btn x=979 y=778 w=86 h=70 mw=86 '+' tw=14
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             Btn x=779 y=778 w=183 h=70 mw=183 'مؤشر صوتي' tw=111
+10-24 17:08:25.076  2922  2922 D OMARSDBG:         GapBox x=58 y=191 w=480 h=693 mw=480
+10-24 17:08:25.076  2922  2922 D OMARSDBG:           GapBox x=58 y=191 w=480 h=68 mw=480
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             Btn x=301 y=197 w=231 h=56 mw=231 'تلفزيون' tw=69
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             Btn x=64 y=197 w=232 h=56 mw=232 'راديو' tw=46
+10-24 17:08:25.076  2922  2922 D OMARSDBG:           GapBox x=58 y=276 w=480 h=36 mw=480
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             TextView x=187 y=279 w=341 h=30 mw=341 'القنوات ٧' tw=72
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             Btn x=68 y=276 w=119 h=36 mw=119 '★ المفضلة' tw=81
+10-24 17:08:25.076  2922  2922 D OMARSDBG:           ScrollView x=58 y=329 w=480 h=555 mw=480
+10-24 17:08:25.076  2922  2922 D OMARSDBG:             GapBox x=58 y=329 w=480 h=864 mw=480
+10-24 17:08:25.076  2922  2922 D OMARSDBG:               GapBox x=70 y=339 w=456 h=108 mw=456
+10-24 17:08:25.076  2922  2922 D OMARSDBG:               GapBox x=70 y=461 w=456 h=108 mw=456
+10-24 17:08:25.076  2922  2922 D OMARSDBG:               GapBox x=70 y=583 w=456 h=108 mw=456
+10-24 17:08:25.076  2922  2922 D OMARSDBG:               GapBox x=70 y=705 w=456 h=108 mw=456
+10-24 17:08:25.076  2922  2922 D OMARSDBG:               GapBox x=70 y=827 w=456 h=108 mw=456
+10-24 17:08:25.076  2922  2922 D OMARSDBG:               GapBox x=70 y=949 w=456 h=108 mw=456
+10-24 17:08:25.076  2922  2922 D OMARSDBG:               GapBox x=70 y=1071 w=456 h=108 mw=456
+10-24 17:08:25.076  2922  2922 D OMARSDBG:       GapBox x=58 y=908 w=1804 h=134 mw=1804
+10-24 17:08:25.076  2922  2922 D OMARSDBG:         GapBox x=1524 y=908 w=338 h=134 mw=338
+10-24 17:08:25.076  2922  2922 D OMARSDBG:           TextView x=1553 y=922 w=280 h=33 mw=280 'الصلاة القادمة' tw=119
+10-24 17:08:25.076  2922  2922 D OMARSDBG:           TextView x=1553 y=955 w=280 h=28 mw=280 'الفجر' tw=39
+10-24 17:08:25.076  2922  2922 D OMARSDBG:           TextView x=1553 y=983 w=280 h=45 mw=280 '٠٨:٥٧:٣٥' tw=149
+10-24 17:08:25.076  2922  2922 D OMARSDBG:           TextView x=1553 y=1028 w=280 h=0 mw=280 '٠٥:٠٦ ص · المد' tw=172
+10-24 17:08:25.076  2922  2922 D OMARSDBG:         GapBox x=1280 y=908 w=225 h=134 mw=225
+10-24 17:08:25.076  2922  2922 D OMARSDBG:           TextView x=1370 y=928 w=45 h=33 mw=45 'الفجر' tw=45
+10-24 17:08:25.076  2922  2922 D OMARSDBG:           TextView x=1327 y=961 w=131 h=61 mw=131 '٠٥:٠٥ ص' tw=131
+10-24 17:08:25.076  2922  2922 D OMARSDBG:         GapBox x=1036 y=908 w=225 h=134 mw=225
+10-24 17:08:25.077  2922  2922 D OMARSDBG:           TextView x=1117 y=928 w=63 h=33 mw=63 'الشروق' tw=63
+10-24 17:08:25.077  2922  2922 D OMARSDBG:           TextView x=1078 y=961 w=141 h=61 mw=141 '٠٦:٢٤ ص' tw=141
+10-24 17:08:25.077  2922  2922 D OMARSDBG:         GapBox x=792 y=908 w=225 h=134 mw=225
+10-24 17:08:25.077  2922  2922 D OMARSDBG:           TextView x=882 y=928 w=44 h=33 mw=44 'الظهر' tw=44
+10-24 17:08:25.077  2922  2922 D OMARSDBG:           TextView x=850 y=961 w=109 h=61 mw=109 '١٢:٠٦ م' tw=109
+10-24 17:08:25.077  2922  2922 D OMARSDBG:         GapBox x=548 y=908 w=225 h=134 mw=225
+10-24 17:08:25.077  2922  2922 D OMARSDBG:           TextView x=636 y=928 w=49 h=33 mw=49 'العصر' tw=49
+10-24 17:08:25.077  2922  2922 D OMARSDBG:           TextView x=603 y=961 w=115 h=61 mw=115 '٠٣:٢٢ م' tw=115
+10-24 17:08:25.077  2922  2922 D OMARSDBG:         GapBox x=303 y=908 w=226 h=134 mw=226
+10-24 17:08:25.077  2922  2922 D OMARSDBG:           TextView x=386 y=928 w=59 h=33 mw=59 'المغرب' tw=59
+10-24 17:08:25.077  2922  2922 D OMARSDBG:           TextView x=360 y=961 w=112 h=61 mw=112 '٠٥:٤٧ م' tw=112
+10-24 17:08:25.077  2922  2922 D OMARSDBG:         GapBox x=58 y=908 w=226 h=134 mw=226
+10-24 17:08:25.077  2922  2922 D OMARSDBG:           TextView x=144 y=928 w=53 h=33 mw=53 'العشاء' tw=53
+10-24 17:08:25.077  2922  2922 D OMARSDBG:           TextView x=116 y=961 w=110 h=61 mw=110 '٠٧:١٧ م' tw=110
+10-24 17:08:25.077  2922  2922 D OMARSDBG:   FrameLayout x=0 y=0 w=0 h=0 mw=0
+10-24 17:08:25.077  2922  2922 D OMARSDBG:   FrameLayout x=0 y=0 w=0 h=0 mw=0
+10-24 17:08:25.077  2922  2922 D OMARSDBG:     GapBox x=0 y=0 w=0 h=0 mw=0
+10-24 17:08:25.077  2922  2922 D OMARSDBG:       GapBox x=0 y=0 w=0 h=0 mw=0
+10-24 17:08:25.077  2922  2922 D OMARSDBG:         TextView x=0 y=0 w=0 h=0 mw=0 '٠٨:٠٨' tw=368
+10-24 17:08:25.077  2922  2922 D OMARSDBG:         TextView x=0 y=0 w=0 h=0 mw=0 'م' tw=23
+10-24 17:08:25.080  2922  2922 D OMARSDBG:       TextView x=0 y=0 w=0 h=0 mw=0 'السبت  •  ٢٤ أ' tw=699
+10-24 17:08:25.080  2922  2922 D OMARSDBG:       TextView x=0 y=0 w=0 h=0 mw=0 'المدينة المنور' tw=457
+10-24 17:08:25.080  2922  2922 D OMARSDBG:       GapBox x=0 y=0 w=0 h=0 mw=0
+10-24 17:08:25.080  2922  2922 D OMARSDBG:         GapBox x=0 y=0 w=0 h=0 mw=0
+10-24 17:08:25.080  2922  2922 D OMARSDBG:           TextView x=0 y=0 w=0 h=0 mw=0 'الفجر' tw=59
+10-24 17:08:25.086  2922  2922 D OMARSDBG:           TextView x=0 y=0 w=0 h=0 mw=0 '٠٥:٠٥ ص' tw=131
+10-24 17:08:25.086  2922  2922 D OMARSDBG:         GapBox x=0 y=0 w=0 h=0 mw=0
+10-24 17:08:25.086  2922  2922 D OMARSDBG:           TextView x=0 y=0 w=0 h=0 mw=0 'الشروق' tw=82
+10-24 17:08:25.086  2922  2922 D OMARSDBG:           TextView x=0 y=0 w=0 h=0 mw=0 '٠٦:٢٤ ص' tw=141
+10-24 17:08:25.086  2922  2922 D OMARSDBG:         GapBox x=0 y=0 w=0 h=0 mw=0
+10-24 17:08:25.086  2922  2922 D OMARSDBG:           TextView x=0 y=0 w=0 h=0 mw=0 'الظهر' tw=58
+10-24 17:08:25.086  2922  2922 D OMARSDBG:           TextView x=0 y=0 w=0 h=0 mw=0 '١٢:٠٦ م' tw=109
+10-24 17:08:25.086  2922  2922 D OMARSDBG:         GapBox x=0 y=0 w=0 h=0 mw=0
+10-24 17:08:25.086  2922  2922 D OMARSDBG:           TextView x=0 y=0 w=0 h=0 mw=0 'العصر' tw=63
+10-24 17:08:25.086  2922  2922 D OMARSDBG:           TextView x=0 y=0 w=0 h=0 mw=0 '٠٣:٢٢ م' tw=115
+10-24 17:08:25.086  2922  2922 D OMARSDBG:         GapBox x=0 y=0 w=0 h=0 mw=0
+10-24 17:08:25.086  2922  2922 D OMARSDBG:           TextView x=0 y=0 w=0 h=0 mw=0 'المغرب' tw=76
+10-24 17:08:25.086  2922  2922 D OMARSDBG:           TextView x=0 y=0 w=0 h=0 mw=0 '٠٥:٤٧ م' tw=112
+10-24 17:08:25.086  2922  2922 D OMARSDBG:         GapBox x=0 y=0 w=0 h=0 mw=0
+10-24 17:08:25.086  2922  2922 D OMARSDBG:           TextView x=0 y=0 w=0 h=0 mw=0 'العشاء' tw=70
+10-24 17:08:25.086  2922  2922 D OMARSDBG:           TextView x=0 y=0 w=0 h=0 mw=0 '٠٧:١٧ م' tw=110
+10-24 17:08:25.086  2922  2922 D OMARSDBG:       TextView x=0 y=0 w=0 h=0 mw=0 '' tw=0
+10-24 17:08:25.086  2922  2922 D OMARSDBG:       TextView x=0 y=0 w=0 h=0 mw=0 '◄ ► الصوت   ▲ ' tw=340
+10-24 17:08:25.086  2922  2922 D OMARSDBG:   TextView x=0 y=0 w=0 h=0 mw=0 '' tw=0
+10-24 17:08:25.086  2922  2922 D OMARSDBG:   TextView x=0 y=0 w=0 h=0 mw=0 '' tw=0
