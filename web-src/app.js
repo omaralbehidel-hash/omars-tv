@@ -12,13 +12,14 @@ const store = {
 /* ---------- الإعدادات ---------- */
 const DEFAULTS = {
   h24: false, secs: true, date: true, wx: true, prayers: true, list: true, listLeft: false,
-  fx: false, burn: true, digits: true, autoplay: false, lite: true, alert: true, beep: false, sleepFx: true, boot: false,
+  fx: false, burn: false, digits: true, autoplay: false, lite: true, alert: true, beep: false, sleepFx: false, boot: false,
   clock: 1, listw: 20, dim: 0.25, hijri: 0, vol: 80,
-  q: 'auto', acc: 'gold', city: 'madinah', unit: 'c', method: 4, asr: 0, gps: null
+  q: 'med', acc: 'gold', city: 'madinah', unit: 'c', method: 4, asr: 0, gps: null
 };
 let S = Object.assign({}, DEFAULTS, store.get('settings', {}));
 if (!['gold', 'blue', 'orange', 'white'].includes(S.acc) || S.acc === 'blue') S.acc = 'gold';
 if (store.get('settings.v', 0) < 2) { S.autoplay = false; S.lite = true; store.set('settings', S); store.set('settings.v', 2); }
+if (store.get('settings.v', 0) < 3) { S.burn = false; S.sleepFx = false; S.q = 'med'; store.set('settings', S); store.set('settings.v', 3); }
 let SAVED = Object.assign({}, S);
 const CITIES = [
   { id: 'madinah', n: 'المدينة المنورة', lat: 24.4686, lon: 39.6142, tz: 'Asia/Riyadh' },
@@ -206,7 +207,7 @@ function ytFallback(it, tok) {
 function startYT(it, tok) {
   const r = parseYT(it.u);
   const base = r.id ? 'https://www.youtube.com/embed/' + r.id + '?' : 'https://www.youtube.com/embed/live_stream?channel=' + r.ch + '&';
-  const src = base + 'autoplay=1&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&hl=ar&enablejsapi=1' + (S.q === 'max' ? '&vq=hd1080' : S.q === 'low' ? '&vq=medium' : '') + (/^https?:/.test(location.origin) ? '&origin=' + encodeURIComponent(location.origin) : '');
+  const src = base + 'autoplay=1&playsinline=1&controls=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&hl=ar&enablejsapi=1' + (S.q === 'max' ? '&vq=hd1080' : S.q === 'med' ? '&vq=hd720' : S.q === 'low' ? '&vq=medium' : '') + (/^https?:/.test(location.origin) ? '&origin=' + encodeURIComponent(location.origin) : '');
   const f = document.createElement('iframe');
   f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
   f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
@@ -235,7 +236,7 @@ window.addEventListener('message', e => {
     else failure(tok, 'تعذر تشغيل القناة', msg);
   } else if (d.event === 'onStateChange') {
     const s = +d.info;
-    if (s === 1) { P.fb = 0; P.buffering = false; P.playing = true; hideOverlay(); if (S.q !== 'auto') ytSend('setPlaybackQuality', [S.q === 'low' ? 'medium' : 'hd1080']); ytSend('setVolume', [P.vol]); ytSend(P.muted ? 'mute' : 'unMute'); }
+    if (s === 1) { P.fb = 0; P.buffering = false; P.playing = true; hideOverlay(); if (S.q !== 'auto') ytSend('setPlaybackQuality', [S.q === 'low' ? 'medium' : S.q === 'med' ? 'hd720' : 'hd1080']); ytSend('setVolume', [P.vol]); ytSend(P.muted ? 'mute' : 'unMute'); }
     else if (s === 2) { P.playing = false; }
     else if (s === 3) { P.buffering = true; }
     ui();
@@ -258,7 +259,7 @@ function startVideo(it, tok) {
   const isM3 = /\.m3u8(\?|$)/i.test(it.u);
   if (isM3 && window.Hls && Hls.isSupported()) {
     const h = new Hls({ lowLatencyMode: false, maxBufferLength: 30, capLevelToPlayerSize: false, abrEwmaDefaultEstimate: 12e6, abrBandWidthFactor: 0.95, abrBandWidthUpFactor: 0.8, enableWorker: true });
-    h.on(Hls.Events.MANIFEST_PARSED, (_, d) => { const top = d.levels.length - 1; if (S.q === 'max') h.currentLevel = top; else if (S.q === 'low') h.currentLevel = 0; else h.startLevel = top; });
+    h.on(Hls.Events.MANIFEST_PARSED, (_, d) => { const top = d.levels.length - 1; if (S.q === 'max') h.currentLevel = top; else if (S.q === 'med') { let bi = 0; d.levels.forEach((l, i) => { if ((l.height || 0) <= 720) bi = i; }); h.currentLevel = bi; } else if (S.q === 'low') h.currentLevel = 0; else h.startLevel = top; });
     P.hls = h; h.loadSource(it.u); h.attachMedia(v);
     h.on(Hls.Events.ERROR, (_, d) => {
       if (tok !== P.token || !d.fatal) return;
@@ -581,7 +582,7 @@ function renderWx() {
 const viz = $('#viz'), vx = viz.getContext('2d');
 let vlast = 0;
 function drawViz(t) {
-  requestAnimationFrame(drawViz);
+  setTimeout(() => requestAnimationFrame(drawViz), 70);
   if (t - vlast < (S.lite ? 90 : 40)) return; vlast = t;
   const visible = (document.body.classList.contains('aud') || P.mode === 'radio') && !document.body.classList.contains('sleeping') && !document.hidden;
   if (!visible) return;
@@ -609,7 +610,7 @@ function drawViz(t) {
 const fx = $('#fx'), fc = fx.getContext('2d'), stars = Array.from({ length: 90 }, () => ({ x: Math.random(), y: Math.random(), r: Math.random() * 1.2 + .3, p: Math.random() * 6 }));
 let flast = 0;
 function drawFx(t) {
-  requestAnimationFrame(drawFx);
+  setTimeout(() => requestAnimationFrame(drawFx), 120);
   if (!S.fx || document.hidden || document.body.classList.contains('sleeping') || document.body.classList.contains('full') || t - flast < 100) return; flast = t;
   if (fx.width !== fx.clientWidth) { fx.width = fx.clientWidth; fx.height = fx.clientHeight; }
   fc.clearRect(0, 0, fx.width, fx.height); fc.fillStyle = '#fff';
@@ -651,7 +652,7 @@ const CFG = [
   { k: 'alert', l: 'تنبيه مرئي عند دخول الوقت', t: 't' }, { k: 'beep', l: 'تنبيه صوتي عند دخول الوقت', t: 't' },
   { k: 'unit', l: 'وحدة الحرارة', t: 'c', o: [['c', 'مئوية'], ['f', 'فهرنهايت']] },
   { g: 'التشغيل والصوت' },
-  { k: 'q', l: 'جودة الصورة', t: 'c', o: [['auto', 'تلقائي (يبدأ بأعلى جودة)'], ['max', 'الأعلى دائمًا'], ['low', 'الأقل (إنترنت ضعيف)']] },
+  { k: 'q', l: 'جودة الصورة', t: 'c', o: [['med', 'متوسطة 720p (الأخف والأسلس)'], ['auto', 'تلقائي (يختارها يوتيوب)'], ['max', 'الأعلى 1080p (أثقل)'], ['low', 'الأقل (إنترنت ضعيف)']] },
   { k: 'autoplay', l: 'تشغيل آخر قناة تلقائيًا عند الفتح', t: 't' },
   { k: 'vol', l: 'مستوى الصوت الافتراضي', t: 'n', min: 0, max: 100, st: 10 },
   { k: 'dim', l: 'سطوع واجهة وضع النوم', t: 'n', min: .05, max: 1, st: .05, pct: 1 },
