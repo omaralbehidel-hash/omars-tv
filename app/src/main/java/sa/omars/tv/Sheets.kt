@@ -87,6 +87,8 @@ class Sheets(private val a: MainActivity) {
             Row.Toggle("قائمة القنوات على اليسار", { it.listLeft }, { s, v -> s.listLeft = v }),
             Row.Toggle("الأرقام العربية (٠١٢)", { it.digits }, { s, v -> s.digits = v }),
             Row.Num("حجم الساعة", 0.7, 1.4, 0.1, { it.clock }, { s, v -> s.clock = v }, { v -> arStr(String.format(java.util.Locale.ENGLISH, "%.1f", v), Store.s.digits) }),
+            Row.Num("حجم أوقات الصلاة", 0.7, 1.4, 0.1, { it.pscale }, { s, v -> s.pscale = v }, { v -> arStr(String.format(java.util.Locale.ENGLISH, "%.1f", v), Store.s.digits) }),
+            Row.Num("حجم أزرار الصوت والتحكم", 0.6, 1.4, 0.1, { it.vscale }, { s, v -> s.vscale = v }, { v -> arStr(String.format(java.util.Locale.ENGLISH, "%.1f", v), Store.s.digits) }),
             Row.Num("عرض قائمة القنوات", 14.0, 28.0, 2.0, { it.listw.toDouble() }, { s, v -> s.listw = v.toInt() }, { v -> arStr(v.toInt().toString(), Store.s.digits) }),
             Row.Choice("لون التمييز", listOf("gold" to "ذهبي", "orange" to "برتقالي", "white" to "أبيض"), { it.acc }, { s, v -> s.acc = v }),
             Row.Toggle("خلفية النجوم المتحركة", { it.fx }, { s, v -> s.fx = v }),

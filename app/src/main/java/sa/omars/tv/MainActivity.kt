@@ -93,6 +93,7 @@ class MainActivity : Activity(), PlayerEvents {
     private lateinit var nextTime: TextView
     private lateinit var nextCard: LinearLayout
     private val pCards = ArrayList<LinearLayout>()
+    private val pNameT = ArrayList<TextView>()
     private val pTimes = ArrayList<TextView>()
 
     // النوم
@@ -290,8 +291,8 @@ class MainActivity : Activity(), PlayerEvents {
         il.alpha = 0f
         il.scaleX = 0.88f
         il.scaleY = 0.88f
-        il.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(900).withEndAction {
-            main.postDelayed({ endIntro() }, 800)
+        il.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(1300).withEndAction {
+            main.postDelayed({ endIntro() }, 2250)
         }.start()
 
         toastT = label(this, "", 1.05f, Pal.INK)
@@ -409,17 +410,11 @@ class MainActivity : Activity(), PlayerEvents {
         audPanel.gravity = Gravity.CENTER
         audPanel.setBackgroundColor(Color.parseColor("#0C0C0D"))
         audPanel.visibility = View.GONE
-        val logo = ImageView(this)
-        logo.setImageResource(R.drawable.logo_symbol)
-        audPanel.addView(logo, lp(U.r(4.6f), U.r(7f)))
+        viz = VizView(this)
+        audPanel.addView(viz, lp(U.r(9f), U.r(13.5f)))
         audName = label(this, "", 2f, Pal.INK, "sans-serif-medium")
         audName.gravity = Gravity.CENTER
         audPanel.addView(audName, lp(WRAP, WRAP))
-        viz = VizView(this)
-        val vl = lp(MATCH, U.r(8f))
-        vl.leftMargin = U.r(5f)
-        vl.rightMargin = U.r(5f)
-        audPanel.addView(viz, vl)
         audNote = label(this, "", 1f, Pal.INK2)
         audNote.gravity = Gravity.CENTER
         audPanel.addView(audNote, lp(WRAP, WRAP))
@@ -464,32 +459,7 @@ class MainActivity : Activity(), PlayerEvents {
         playerCard.addView(liveT, ll)
 
         // أزرار التحكم
-        controls = hbox(this, 0.7f)
-        controls.gravity = Gravity.CENTER
-        controls.setPadding(U.r(1f), U.r(0.5f), U.r(1f), U.r(0.5f))
-        val g = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, intArrayOf(Color.parseColor("#B3000000"), Color.TRANSPARENT))
-        controls.background = shape(Pal.PANEL, U.px(2f), Pal.LINE, 1)
-        val bPrev = IBtn(this, R.drawable.ic_prev)
-        bPlay = IBtn(this, R.drawable.ic_play, 3.4f, true)
-        val bNext = IBtn(this, R.drawable.ic_next)
-        bMute = IBtn(this, R.drawable.ic_vol)
-        val bVm = Btn(this, "−")
-        vLab = label(this, "", 1.05f, Pal.INK, "sans-serif-medium")
-        vLab.gravity = Gravity.CENTER
-        vLab.minWidth = U.r(3.4f)
-        val bVp = Btn(this, "+")
-        bViz = Btn(this, "مؤشر صوتي")
-        bPrev.setOnClickListener { step(-1) }
-        bPlay.setOnClickListener { togglePlay() }
-        bNext.setOnClickListener { step(1) }
-        bMute.setOnClickListener { muted = !muted; host.setMuted(muted); refreshUi() }
-        bVm.setOnClickListener { setVol(vol - 10) }
-        bVp.setOnClickListener { setVol(vol + 10) }
-        bViz.setOnClickListener { audOn = !audOn; refreshUi() }
-        for (v in listOf<View>(bPrev, bPlay, bNext, bMute, bVm, vLab, bVp, bViz)) controls.addView(v)
-        for (v in listOf<View>(bPrev, bPlay, bNext, bMute, bVm, bVp, bViz)) {
-            v.setOnFocusChangeListener { _, f -> if (f) hot() }
-        }
+        makeControls()
 
         // ---- العمود الجانبي ----
         side = vbox(this, 0.7f)
@@ -530,6 +500,44 @@ class MainActivity : Activity(), PlayerEvents {
         playerCol.addView(playerCard, lp(MATCH, 0, 1f))
         playerCol.addView(controls, lp(MATCH, WRAP))
         placeStage()
+    }
+
+    private var ctlScale = -1.0
+
+    private fun makeControls() {
+        val vs = S.vscale.toFloat()
+        ctlScale = S.vscale
+        controls = hbox(this, 0.5f * vs)
+        controls.gravity = Gravity.CENTER
+        controls.setPadding(U.r(0.8f * vs), U.r(0.35f * vs), U.r(0.8f * vs), U.r(0.35f * vs))
+        controls.background = shape(Pal.PANEL, U.px(1.6f * vs), Pal.LINE, 1)
+        fun sb(t: String): Btn {
+            val b = Btn(this, t, false, 0.85f * vs)
+            b.minHeight = U.r(2.1f * vs)
+            b.setPadding(U.r(0.9f * vs), U.r(0.3f * vs), U.r(0.9f * vs), U.r(0.3f * vs))
+            return b
+        }
+        val bPrev = IBtn(this, R.drawable.ic_prev, 2.2f * vs)
+        bPlay = IBtn(this, R.drawable.ic_play, 2.7f * vs, true)
+        val bNext = IBtn(this, R.drawable.ic_next, 2.2f * vs)
+        bMute = IBtn(this, R.drawable.ic_vol, 2.2f * vs)
+        val bVm = sb("−")
+        vLab = label(this, "", 0.9f * vs, Pal.INK, "sans-serif-medium")
+        vLab.gravity = Gravity.CENTER
+        vLab.minWidth = U.r(2.8f * vs)
+        val bVp = sb("+")
+        bViz = sb("مؤشر صوتي")
+        bPrev.setOnClickListener { step(-1) }
+        bPlay.setOnClickListener { togglePlay() }
+        bNext.setOnClickListener { step(1) }
+        bMute.setOnClickListener { muted = !muted; host.setMuted(muted); refreshUi() }
+        bVm.setOnClickListener { setVol(vol - 10) }
+        bVp.setOnClickListener { setVol(vol + 10) }
+        bViz.setOnClickListener { audOn = !audOn; refreshUi() }
+        for (v in listOf<View>(bPrev, bPlay, bNext, bMute, bVm, vLab, bVp, bViz)) controls.addView(v)
+        for (v in listOf<View>(bPrev, bPlay, bNext, bMute, bVm, bVp, bViz)) {
+            v.setOnFocusChangeListener { _, f -> if (f) hot() }
+        }
     }
 
     private fun segBtn(t: String): TextView {
@@ -582,6 +590,7 @@ class MainActivity : Activity(), PlayerEvents {
             c.addView(n, lp(WRAP, WRAP))
             c.addView(t, lp(WRAP, WRAP))
             pCards.add(c)
+            pNameT.add(n)
             pTimes.add(t)
             prayRow.addView(c, lp(0, MATCH, 1f))
         }
@@ -642,6 +651,22 @@ class MainActivity : Activity(), PlayerEvents {
         clockT.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(4f * S.clock.toFloat()))
         secsT.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.35f * S.clock.toFloat()))
         apT.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.35f * S.clock.toFloat()))
+        if (S.vscale != ctlScale) {
+            playerCol.removeView(controls)
+            makeControls()
+            playerCol.addView(controls, lp(MATCH, WRAP))
+            controls.visibility = if (full) View.GONE else View.VISIBLE
+        }
+        val ps = S.pscale.toFloat()
+        val rl = prayRow.layoutParams
+        rl.height = U.r(5.6f * ps)
+        prayRow.layoutParams = rl
+        for (t in pTimes) t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.9f * ps))
+        for (n in pNameT) n.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1f * ps))
+        nextTitle.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.3f * ps))
+        nextName.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.5f * ps))
+        nextCd.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.5f * ps))
+        nextTime.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1f * ps))
         placeStage()
         sleepIn.alpha = S.dim.toFloat()
         lastDay = ""

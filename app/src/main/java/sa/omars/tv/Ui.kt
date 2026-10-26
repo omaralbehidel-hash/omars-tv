@@ -192,28 +192,43 @@ fun gap(w: Int, h: Int): GradientDrawable {
 
 fun Context.vwidth() = resources.displayMetrics.widthPixels
 
-/** مؤشر الصوت: أعمدة من الطيف الحقيقي، وعند غيابه شريط خافت. */
+/** مؤشر الصوت على شكل الشعار: يمتلئ الشعار بالذهبي من الأسفل بحسب الطيف الحقيقي. */
 class VizView(ctx: Context) : View(ctx) {
     var bands = FloatArray(48)
     var real = false
-    private val p = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val rect = RectF()
+    private val logo: android.graphics.Bitmap =
+        android.graphics.BitmapFactory.decodeResource(ctx.resources, R.drawable.logo_symbol)
+    private val pBase = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+    private val pBar = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val pMask = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+    private val dst = RectF()
+
+    init {
+        pMask.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.DST_IN)
+    }
 
     override fun onDraw(c: Canvas) {
-        val n = bands.size
         val w = width.toFloat()
         val h = height.toFloat()
-        if (w <= 0f) return
-        val bw = w / n
-        p.color = Pal.GOLD
-        p.alpha = if (real) 230 else 60
+        if (w <= 0f || h <= 0f) return
+        val sc = minOf(w / logo.width, h / logo.height)
+        val dw = logo.width * sc
+        val dh = logo.height * sc
+        dst.set((w - dw) / 2f, (h - dh) / 2f, (w + dw) / 2f, (h + dh) / 2f)
+        pBase.alpha = if (real) 55 else 200
+        c.drawBitmap(logo, null, dst, pBase)
+        if (!real) return
+        val layer = c.saveLayer(dst, null)
+        val n = bands.size
+        val bw = dw / n
+        pBar.color = Pal.GOLD
         for (i in 0 until n) {
-            val a = if (real) bands[i] else 0f
-            val bh = maxOf(U.px(0.18f), a * h)
-            val x = i * bw + bw * 0.18f
-            rect.set(x, (h - bh) / 2f, x + bw * 0.64f, (h + bh) / 2f)
-            c.drawRoundRect(rect, bw * 0.32f, bw * 0.32f, p)
+            val a = bands[i].coerceIn(0f, 1f)
+            val bh = (0.04f + 0.96f * a) * dh
+            c.drawRect(dst.left + i * bw, dst.bottom - bh, dst.left + (i + 1) * bw + 1f, dst.bottom, pBar)
         }
+        c.drawBitmap(logo, null, dst, pMask)
+        c.restoreToCount(layer)
     }
 }
 
