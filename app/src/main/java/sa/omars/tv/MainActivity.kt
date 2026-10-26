@@ -166,7 +166,7 @@ class MainActivity : Activity(), PlayerEvents {
         buildUi()
         if (applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0) {
             root.postDelayed({ dbgDump(root, 0) }, 9000)
-            if (intent.getStringExtra("dbg") == "radio") root.postDelayed({ setMode("radio"); play(0, true) }, 5500)
+            if (intent.getStringExtra("dbg") == "radio") root.postDelayed({ setMode("radio", true); play(0, true) }, 5500)
         }
         host = PlayerHost(this, surface, web, this)
         host.setVolume(vol)
