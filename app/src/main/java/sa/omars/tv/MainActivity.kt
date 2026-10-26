@@ -562,7 +562,6 @@ class MainActivity : Activity(), PlayerEvents {
         nextTitle = label(this, "الصلاة القادمة :", 1.3f, Pal.INK2)
         nextName = label(this, "", 1.5f, Pal.GOLD, "sans-serif-medium")
         nextCd = label(this, "", 1.5f, Pal.INK, "sans-serif-medium")
-        nextCd.layoutDirection = View.LAYOUT_DIRECTION_LTR
         nextTime = label(this, "", 1.0f, Pal.INK2)
         nextCard.addView(nextTitle)
         nextCard.addView(nextName)

@@ -5,9 +5,12 @@ adb install -r "$APK" || exit 0
 adb logcat -c
 adb shell am start -n sa.omars.tv/.MainActivity
 shot(){ adb exec-out screencap -p > "shots/$1.png"; }
-sleep 1.6
-shot 00_intro
-sleep 14
+shot 00a
+sleep 0.8
+shot 00b
+sleep 0.8
+shot 00c
+sleep 12
 key(){ adb shell input keyevent "$1"; sleep 1.2; }
 shot 01_start
 adb shell uiautomator dump /sdcard/ui1.xml >/dev/null 2>&1; adb pull /sdcard/ui1.xml shots/ui1.xml >/dev/null 2>&1
