@@ -204,7 +204,7 @@ class PlayerHost(
         exo?.let { return it }
         // مخزن مؤقت أكبر + شبكة أصبر + بلا تغيير سرعة التشغيل = بث بلا تقطيع
         val lc = DefaultLoadControl.Builder()
-            .setBufferDurationsMs(30_000, 90_000, 4_000, 8_000)
+            .setBufferDurationsMs(40_000, 80_000, 4_000, 8_000)
             .setPrioritizeTimeOverSizeThresholds(true)
             .build()
         val http = DefaultHttpDataSource.Factory()
@@ -212,6 +212,7 @@ class PlayerHost(
             .setReadTimeoutMs(20_000)
             .setAllowCrossProtocolRedirects(true)
         val msf = DefaultMediaSourceFactory(DefaultDataSource.Factory(ctx, http))
+            .setLoadErrorHandlingPolicy(androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy(8))
         val rf = SpecRenderers(ctx, TeeAudioProcessor(spectrum)).setEnableDecoderFallback(true)
         val p = ExoPlayer.Builder(ctx, rf).setLoadControl(lc).setMediaSourceFactory(msf).build()
         p.setVideoSurfaceView(surface)

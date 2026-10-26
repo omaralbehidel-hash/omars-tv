@@ -70,6 +70,9 @@ class MainActivity : Activity(), PlayerEvents {
     private lateinit var ovB2: Btn
     private lateinit var liveT: TextView
     private lateinit var controls: LinearLayout
+    private lateinit var playerCol: LinearLayout
+    private lateinit var prayWrap: LinearLayout
+    private lateinit var introScr: FrameLayout
     private lateinit var bPlay: IBtn
     private lateinit var bMute: IBtn
     private lateinit var vLab: TextView
@@ -231,6 +234,14 @@ class MainActivity : Activity(), PlayerEvents {
     // =====================================================================
     //  بناء الواجهة
     // =====================================================================
+    private fun endIntro() {
+        if (introScr.visibility != View.VISIBLE) return
+        introScr.animate().alpha(0f).setDuration(450).withEndAction {
+            introScr.visibility = View.GONE
+            focusCurrentItem()
+        }.start()
+    }
+
     private fun dbgDump(v: View, d: Int) {
         val loc = IntArray(2)
         v.getLocationOnScreen(loc)
@@ -268,6 +279,20 @@ class MainActivity : Activity(), PlayerEvents {
 
         sleepScr.visibility = View.GONE
         root.addView(sleepScr, FrameLayout.LayoutParams(MATCH, MATCH))
+
+        introScr = FrameLayout(this)
+        introScr.setBackgroundColor(Color.BLACK)
+        val il = ImageView(this)
+        il.setImageResource(R.drawable.logo_full)
+        il.scaleType = ImageView.ScaleType.FIT_CENTER
+        introScr.addView(il, FrameLayout.LayoutParams(U.r(22f), U.r(22f), Gravity.CENTER))
+        root.addView(introScr, FrameLayout.LayoutParams(MATCH, MATCH))
+        il.alpha = 0f
+        il.scaleX = 0.88f
+        il.scaleY = 0.88f
+        il.animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(900).withEndAction {
+            main.postDelayed({ endIntro() }, 800)
+        }.start()
 
         toastT = label(this, "", 1.05f, Pal.INK)
         toastT.setPadding(U.r(1.6f), U.r(0.6f), U.r(1.6f), U.r(0.6f))
@@ -441,11 +466,11 @@ class MainActivity : Activity(), PlayerEvents {
         // أزرار التحكم
         controls = hbox(this, 0.7f)
         controls.gravity = Gravity.CENTER
-        controls.setPadding(U.r(1f), U.r(2.2f), U.r(1f), U.r(1f))
+        controls.setPadding(U.r(1f), U.r(0.5f), U.r(1f), U.r(0.5f))
         val g = GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, intArrayOf(Color.parseColor("#B3000000"), Color.TRANSPARENT))
-        controls.background = g
+        controls.background = shape(Pal.PANEL, U.px(2f), Pal.LINE, 1)
         val bPrev = IBtn(this, R.drawable.ic_prev)
-        bPlay = IBtn(this, R.drawable.ic_play, 3.9f, true)
+        bPlay = IBtn(this, R.drawable.ic_play, 3.4f, true)
         val bNext = IBtn(this, R.drawable.ic_next)
         bMute = IBtn(this, R.drawable.ic_vol)
         val bVm = Btn(this, "−")
@@ -462,9 +487,6 @@ class MainActivity : Activity(), PlayerEvents {
         bVp.setOnClickListener { setVol(vol + 10) }
         bViz.setOnClickListener { audOn = !audOn; refreshUi() }
         for (v in listOf<View>(bPrev, bPlay, bNext, bMute, bVm, vLab, bVp, bViz)) controls.addView(v)
-        val cl = FrameLayout.LayoutParams(MATCH, WRAP, Gravity.BOTTOM)
-        playerCard.addView(controls, cl)
-        controls.alpha = 0f
         for (v in listOf<View>(bPrev, bPlay, bNext, bMute, bVm, bVp, bViz)) {
             v.setOnFocusChangeListener { _, f -> if (f) hot() }
         }
@@ -504,6 +526,9 @@ class MainActivity : Activity(), PlayerEvents {
         listScroll.addView(listBox, FrameLayout.LayoutParams(MATCH, WRAP))
         side.addView(listScroll, lp(MATCH, 0, 1f))
 
+        playerCol = vbox(this, 0.8f)
+        playerCol.addView(playerCard, lp(MATCH, 0, 1f))
+        playerCol.addView(controls, lp(MATCH, WRAP))
         placeStage()
     }
 
@@ -520,36 +545,33 @@ class MainActivity : Activity(), PlayerEvents {
         val sideW = lp(U.r(S.listw.toFloat()), MATCH)
         val pl = lp(0, MATCH, 1f)
         if (S.listLeft) {
-            stage.addView(playerCard, pl)
+            stage.addView(playerCol, pl)
             stage.addView(side, sideW)
         } else {
             stage.addView(side, sideW)
-            stage.addView(playerCard, pl)
+            stage.addView(playerCol, pl)
         }
         side.visibility = if (S.list) View.VISIBLE else View.GONE
     }
 
     private fun buildPrayers() {
-        prayRow = hbox(this, 0.8f)
-        prayRow.gravity = Gravity.NO_GRAVITY
-        shiftBox.addView(prayRow, lp(MATCH, U.r(5.6f)))
-
-        nextCard = vbox(this)
-        nextCard.setPadding(U.r(1.2f), U.r(0.6f), U.r(1.2f), U.r(0.6f))
-        nextCard.background = shape(Pal.SOFT, U.px(1.1f), Pal.GOLD, 2)
-        nextCard.gravity = Gravity.CENTER_VERTICAL
-        nextTitle = label(this, "الصلاة القادمة", 1f, Pal.INK, "sans-serif-medium")
-        nextName = label(this, "", 0.9f, Pal.INK2)
-        nextCd = label(this, "", 2.2f, Pal.GOLD, "sans-serif-medium")
+        prayWrap = vbox(this, 0.5f)
+        shiftBox.addView(prayWrap, lp(MATCH, WRAP))
+        nextCard = hbox(this, 0.8f)
+        nextCard.gravity = Gravity.CENTER
+        nextTitle = label(this, "الصلاة القادمة :", 1.3f, Pal.INK2)
+        nextName = label(this, "", 1.5f, Pal.GOLD, "sans-serif-medium")
+        nextCd = label(this, "", 1.5f, Pal.INK, "sans-serif-medium")
         nextCd.layoutDirection = View.LAYOUT_DIRECTION_LTR
-        nextCd.gravity = Gravity.END
-        nextTime = label(this, "", 0.8f, Pal.INK2)
+        nextTime = label(this, "", 1.0f, Pal.INK2)
         nextCard.addView(nextTitle)
         nextCard.addView(nextName)
-        nextCard.addView(nextCd, lp(MATCH, WRAP))
+        nextCard.addView(nextCd)
         nextCard.addView(nextTime)
-        prayRow.addView(nextCard, lp(0, MATCH, 1.5f))
-
+        prayWrap.addView(nextCard, lp(MATCH, WRAP))
+        prayRow = hbox(this, 0.8f)
+        prayRow.gravity = Gravity.NO_GRAVITY
+        prayWrap.addView(prayRow, lp(MATCH, U.r(5.6f)))
         for (i in 0 until 6) {
             val c = vbox(this)
             c.gravity = Gravity.CENTER
@@ -616,7 +638,7 @@ class MainActivity : Activity(), PlayerEvents {
         dateBox.visibility = if (S.date) View.VISIBLE else View.GONE
         dateRule.visibility = if (S.date) View.VISIBLE else View.GONE
         wxPill.visibility = if (S.wx) View.VISIBLE else View.GONE
-        prayRow.visibility = if (S.prayers && !full) View.VISIBLE else View.GONE
+        prayWrap.visibility = if (S.prayers && !full) View.VISIBLE else View.GONE
         stars.visibility = if (S.fx) View.VISIBLE else View.GONE
         clockT.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(4f * S.clock.toFloat()))
         secsT.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.35f * S.clock.toFloat()))
@@ -712,10 +734,10 @@ class MainActivity : Activity(), PlayerEvents {
             sPrayT[i].text = s
         }
         if (t == null) {
-            nextTitle.text = "مواقيت الصلاة"
+            nextTitle.text = "مواقيت الصلاة :"
             nextName.text = ptMsg.ifEmpty { "جارٍ التحميل…" }
             nextCd.text = ""
-            nextTime.text = c.n
+            nextTime.text = ""
             for (card in pCards) card.alpha = 1f
             return
         }
@@ -731,10 +753,10 @@ class MainActivity : Activity(), PlayerEvents {
             name = PRAYER_NAMES[ni]
         }
         val left = (nextSec - now).coerceAtLeast(0)
-        nextTitle.text = "الصلاة القادمة"
+        nextTitle.text = "الصلاة القادمة :"
         nextName.text = name
         nextCd.text = arStr(p2(left / 3600) + ":" + p2((left % 3600) / 60) + ":" + p2(left % 60), S.digits)
-        nextTime.text = fmtTimeStr(nextSec % 86400, S.h24, S.digits) + " · " + c.n
+        nextTime.text = "·  " + fmtTimeStr(nextSec % 86400, S.h24, S.digits)
         for (i in 0 until 6) {
             val isNext = i == ni || (ni == -1 && i == 0)
             pCards[i].alpha = if (ni == -1 || i >= ni) 1f else 0.5f
@@ -1132,8 +1154,7 @@ class MainActivity : Activity(), PlayerEvents {
     private val toastHide = Runnable { toastT.visibility = View.GONE }
 
     private fun setControlsAlpha(on: Boolean) {
-        controls.animate().cancel()
-        controls.alpha = if (on) 1f else 0f
+        controls.visibility = if (full && !on) View.GONE else View.VISIBLE
     }
 
     private fun hot() {
@@ -1144,8 +1165,9 @@ class MainActivity : Activity(), PlayerEvents {
 
     fun setFull(on: Boolean) {
         full = on
+        controls.visibility = if (on) View.GONE else View.VISIBLE
         topBar.visibility = if (on) View.GONE else View.VISIBLE
-        prayRow.visibility = if (on || !S.prayers) View.GONE else View.VISIBLE
+        prayWrap.visibility = if (on || !S.prayers) View.GONE else View.VISIBLE
         side.visibility = if (on || !S.list) View.GONE else View.VISIBLE
         stage.setPadding(0, 0, 0, 0)
         shiftBox.setPadding(if (on) 0 else U.r(2.4f), if (on) 0 else U.r(1.5f), if (on) 0 else U.r(2.4f), if (on) 0 else U.r(1.6f))
@@ -1259,6 +1281,11 @@ class MainActivity : Activity(), PlayerEvents {
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         val k = event.keyCode
         val down = event.action == KeyEvent.ACTION_DOWN
+
+        if (introScr.visibility == View.VISIBLE) {
+            if (down) endIntro()
+            return true
+        }
 
         if (sleeping) {
             if (!down) return true
