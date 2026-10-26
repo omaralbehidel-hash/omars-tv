@@ -412,7 +412,7 @@ class MainActivity : Activity(), PlayerEvents {
         audPanel.setBackgroundColor(Color.parseColor("#0C0C0D"))
         audPanel.visibility = View.GONE
         viz = VizView(this)
-        audPanel.addView(viz, lp(U.r(9f), U.r(13.5f)))
+        audPanel.addView(viz, lp(U.r(14f), U.r(14f)))
         audName = label(this, "", 2f, Pal.INK, "sans-serif-medium")
         audName.gravity = Gravity.CENTER
         audPanel.addView(audName, lp(WRAP, WRAP))

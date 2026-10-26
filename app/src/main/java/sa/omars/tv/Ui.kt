@@ -192,43 +192,56 @@ fun gap(w: Int, h: Int): GradientDrawable {
 
 fun Context.vwidth() = resources.displayMetrics.widthPixels
 
-/** مؤشر الصوت على شكل الشعار: يمتلئ الشعار بالذهبي من الأسفل بحسب الطيف الحقيقي. */
+/** مؤشر الصوت الدائري: أعمدة شعاعية حول الشعار تتحرك مع الطيف الحقيقي. */
 class VizView(ctx: Context) : View(ctx) {
     var bands = FloatArray(48)
     var real = false
     private val logo: android.graphics.Bitmap =
         android.graphics.BitmapFactory.decodeResource(ctx.resources, R.drawable.logo_symbol)
-    private val pBase = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+    private val pLogo = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val pBar = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val pMask = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
+    private val pRing = Paint(Paint.ANTI_ALIAS_FLAG)
     private val dst = RectF()
 
     init {
-        pMask.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.DST_IN)
+        pBar.strokeCap = Paint.Cap.ROUND
+        pRing.style = Paint.Style.STROKE
     }
 
     override fun onDraw(c: Canvas) {
         val w = width.toFloat()
         val h = height.toFloat()
         if (w <= 0f || h <= 0f) return
-        val sc = minOf(w / logo.width, h / logo.height)
-        val dw = logo.width * sc
-        val dh = logo.height * sc
-        dst.set((w - dw) / 2f, (h - dh) / 2f, (w + dw) / 2f, (h + dh) / 2f)
-        pBase.alpha = if (real) 55 else 200
-        c.drawBitmap(logo, null, dst, pBase)
-        if (!real) return
-        val layer = c.saveLayer(dst, null)
+        val cx = w / 2f
+        val cy = h / 2f
+        val rOut = minOf(w, h) / 2f
+        val r0 = rOut * 0.64f
+        // حلقة خافتة
+        pRing.color = Pal.GOLD
+        pRing.alpha = 50
+        pRing.strokeWidth = maxOf(2f, rOut * 0.012f)
+        c.drawCircle(cx, cy, r0 * 0.93f, pRing)
+        // الأعمدة (متناظرة يمينًا ويسارًا)
         val n = bands.size
-        val bw = dw / n
+        val total = n * 2
         pBar.color = Pal.GOLD
-        for (i in 0 until n) {
-            val a = bands[i].coerceIn(0f, 1f)
-            val bh = (0.04f + 0.96f * a) * dh
-            c.drawRect(dst.left + i * bw, dst.bottom - bh, dst.left + (i + 1) * bw + 1f, dst.bottom, pBar)
+        pBar.strokeWidth = (2f * Math.PI.toFloat() * r0 / total) * 0.55f
+        for (k in 0 until total) {
+            val idx = if (k < n) k else total - 1 - k
+            val a = if (real) bands[idx].coerceIn(0f, 1f) else 0f
+            val len = rOut * 0.03f + a * (rOut - r0 - rOut * 0.03f)
+            val ang = (-90.0 + k * 360.0 / total) * Math.PI / 180.0
+            val ca = Math.cos(ang).toFloat()
+            val sa = Math.sin(ang).toFloat()
+            pBar.alpha = if (real) 90 + (a * 165).toInt() else 55
+            c.drawLine(cx + ca * r0, cy + sa * r0, cx + ca * (r0 + len), cy + sa * (r0 + len), pBar)
         }
-        c.drawBitmap(logo, null, dst, pMask)
-        c.restoreToCount(layer)
+        // الشعار في الوسط
+        val lh = r0 * 1.45f
+        val lw = lh * logo.width / logo.height
+        dst.set(cx - lw / 2f, cy - lh / 2f, cx + lw / 2f, cy + lh / 2f)
+        pLogo.alpha = 255
+        c.drawBitmap(logo, null, dst, pLogo)
     }
 }
 
