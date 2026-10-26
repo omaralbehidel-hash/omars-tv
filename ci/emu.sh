@@ -34,6 +34,10 @@ key KEYCODE_DPAD_UP
 key KEYCODE_DPAD_UP
 key KEYCODE_DPAD_UP
 shot 06_after
+adb shell am force-stop sa.omars.tv
+adb shell am start -n sa.omars.tv/.MainActivity --es dbg radio
+sleep 40
+shot 07_radio
 adb logcat -d -s OMARSDBG > shots/dbg.txt
 adb logcat -d -t 3000 > shots/logcat.txt
 adb logcat -d -b crash > shots/crash.txt
