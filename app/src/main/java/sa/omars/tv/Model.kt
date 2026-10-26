@@ -86,7 +86,7 @@ class Settings {
     var beep = false
     var sleepFx = false
     var boot = false
-    var direct = false      // تفضيل البث الرسمي المباشر (أخف) على يوتيوب
+    var direct = true       // تفضيل البث الرسمي المباشر (أخف) على يوتيوب
     var clock = 1.0
     var listw = 20
     var dim = 0.25
@@ -106,7 +106,7 @@ class Settings {
         o.put("h24", h24); o.put("secs", secs); o.put("date", date); o.put("wx", wx); o.put("prayers", prayers)
         o.put("list", list); o.put("listLeft", listLeft); o.put("fx", fx); o.put("burn", burn); o.put("digits", digits)
         o.put("autoplay", autoplay); o.put("alert", alert); o.put("beep", beep); o.put("sleepFx", sleepFx); o.put("boot", boot)
-        o.put("direct", direct); o.put("clock", clock); o.put("listw", listw); o.put("dim", dim); o.put("hijri", hijri)
+        o.put("src2", direct); o.put("clock", clock); o.put("listw", listw); o.put("dim", dim); o.put("hijri", hijri)
         o.put("vol", vol); o.put("q", q); o.put("acc", acc); o.put("city", city); o.put("unit", unit)
         o.put("method", method); o.put("asr", asr); o.put("gpsLat", gpsLat); o.put("gpsLon", gpsLon)
         return o.toString()
@@ -121,7 +121,7 @@ class Settings {
             listLeft = o.optBoolean("listLeft", listLeft); fx = o.optBoolean("fx", fx); burn = o.optBoolean("burn", burn)
             digits = o.optBoolean("digits", digits); autoplay = o.optBoolean("autoplay", autoplay); alert = o.optBoolean("alert", alert)
             beep = o.optBoolean("beep", beep); sleepFx = o.optBoolean("sleepFx", sleepFx); boot = o.optBoolean("boot", boot)
-            direct = o.optBoolean("direct", direct); clock = o.optDouble("clock", clock); listw = o.optInt("listw", listw)
+            direct = o.optBoolean("src2", direct); clock = o.optDouble("clock", clock); listw = o.optInt("listw", listw)
             dim = o.optDouble("dim", dim); hijri = o.optInt("hijri", hijri); vol = o.optInt("vol", vol)
             q = o.optString("q", q); acc = o.optString("acc", acc); city = o.optString("city", city); unit = o.optString("unit", unit)
             method = o.optInt("method", method); asr = o.optInt("asr", asr)

@@ -12,7 +12,13 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.DefaultHttpDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.DefaultRenderersFactory
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.audio.AudioSink
 import androidx.media3.exoplayer.audio.DefaultAudioSink
@@ -50,6 +56,8 @@ class Spectrum(private val sink: (FloatArray) -> Unit) : TeeAudioProcessor.Audio
     private val im = FloatArray(n)
     private val win = FloatArray(n) { (0.5 - 0.5 * cos(2 * PI * it / (n - 1))).toFloat() }
     private val bars = 48
+    private val ex = Executors.newSingleThreadExecutor()
+    private val busy = AtomicBoolean(false)
     private val out = FloatArray(bars)
     private val edges = IntArray(bars + 1) { i -> (2 * (230.0 / 2).pow(i.toDouble() / bars)).toInt().coerceAtLeast(2) }
 
@@ -70,17 +78,22 @@ class Spectrum(private val sink: (FloatArray) -> Unit) : TeeAudioProcessor.Audio
             buf[fill++] = sb.get(sb.position() + i) / 32768f
             i += channels
             if (fill == n) {
-                compute()
                 fill = 0
                 last = now
+                if (busy.compareAndSet(false, true)) {
+                    val snap = buf.copyOf()
+                    ex.execute {
+                        try { compute(snap) } finally { busy.set(false) }
+                    }
+                }
                 return
             }
         }
     }
 
-    private fun compute() {
+    private fun compute(src: FloatArray) {
         for (k in 0 until n) {
-            re[k] = buf[k] * win[k]
+            re[k] = src[k] * win[k]
             im[k] = 0f
         }
         fft()
@@ -189,7 +202,18 @@ class PlayerHost(
 
     private fun player(): ExoPlayer {
         exo?.let { return it }
-        val p = ExoPlayer.Builder(ctx, SpecRenderers(ctx, TeeAudioProcessor(spectrum))).build()
+        // مخزن مؤقت أكبر + شبكة أصبر + بلا تغيير سرعة التشغيل = بث بلا تقطيع
+        val lc = DefaultLoadControl.Builder()
+            .setBufferDurationsMs(30_000, 90_000, 4_000, 8_000)
+            .setPrioritizeTimeOverSizeThresholds(true)
+            .build()
+        val http = DefaultHttpDataSource.Factory()
+            .setConnectTimeoutMs(15_000)
+            .setReadTimeoutMs(20_000)
+            .setAllowCrossProtocolRedirects(true)
+        val msf = DefaultMediaSourceFactory(DefaultDataSource.Factory(ctx, http))
+        val rf = SpecRenderers(ctx, TeeAudioProcessor(spectrum)).setEnableDecoderFallback(true)
+        val p = ExoPlayer.Builder(ctx, rf).setLoadControl(lc).setMediaSourceFactory(msf).build()
         p.setVideoSurfaceView(surface)
         p.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(state: Int) {
@@ -275,7 +299,14 @@ class PlayerHost(
         web.visibility = android.view.View.GONE
         surface.visibility = android.view.View.VISIBLE
         val p = player()
-        p.setMediaItem(MediaItem.fromUri(Uri.parse(url)))
+        val live = MediaItem.LiveConfiguration.Builder()
+            .setTargetOffsetMs(16_000)
+            .setMinOffsetMs(9_000)
+            .setMaxOffsetMs(60_000)
+            .setMinPlaybackSpeed(1f)
+            .setMaxPlaybackSpeed(1f)
+            .build()
+        p.setMediaItem(MediaItem.Builder().setUri(Uri.parse(url)).setLiveConfiguration(live).build())
         p.prepare()
         p.playWhenReady = true
         applyVolume()
