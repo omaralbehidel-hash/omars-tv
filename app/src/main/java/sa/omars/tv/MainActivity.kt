@@ -52,6 +52,8 @@ class MainActivity : Activity(), PlayerEvents {
     private lateinit var wxPill: LinearLayout
     private lateinit var wxCityT: TextView
     private lateinit var wxInfoT: TextView
+    private lateinit var wxTempT: TextView
+    private var wxTempStr = ""
     private lateinit var topBar: LinearLayout
 
     // المرحلة
@@ -356,8 +358,15 @@ class MainActivity : Activity(), PlayerEvents {
         wxCityT = label(this, "", 1.1f, Pal.INK, "sans-serif-medium")
         wxInfoT = label(this, "", 1.0f, Pal.INK2)
         wxInfoT.setSingleLine(true)
-        wxPill.addView(wxCityT)
-        wxPill.addView(wxInfoT)
+        wxTempT = label(this, "", 2f * S.clock.toFloat(), Pal.INK, "sans-serif-light")
+        wxTempT.visibility = View.GONE
+        val wxCol = vbox(this, 0.1f)
+        wxCol.gravity = Gravity.CENTER_VERTICAL
+        wxCol.addView(wxCityT)
+        wxCol.addView(wxInfoT)
+        wxPill.gravity = Gravity.CENTER_VERTICAL
+        wxPill.addView(wxTempT)
+        wxPill.addView(wxCol)
         topBar.addView(wxPill, lp(WRAP, WRAP))
 
         val spacer = View(this)
@@ -516,8 +525,6 @@ class MainActivity : Activity(), PlayerEvents {
 
         playerCol = vbox(this, 0.8f)
         playerCol.addView(playerCard, lp(MATCH, 0, 1f))
-        playerCol.addView(controls, lp(MATCH, WRAP))
-        controls.visibility = View.GONE
         placeStage()
     }
 
@@ -526,9 +533,9 @@ class MainActivity : Activity(), PlayerEvents {
     private fun makeControls() {
         val vs = S.vscale.toFloat()
         ctlScale = S.vscale
-        controls = hbox(this, 0.5f * vs)
+        controls = vbox(this, 0.45f * vs)
         controls.gravity = Gravity.CENTER
-        controls.setPadding(U.r(0.8f * vs), U.r(0.35f * vs), U.r(0.8f * vs), U.r(0.35f * vs))
+        controls.setPadding(U.r(0.5f * vs), U.r(0.6f * vs), U.r(0.5f * vs), U.r(0.6f * vs))
         controls.background = shape(Pal.PANEL, U.px(1.6f * vs), Pal.LINE, 1)
         fun sb(t: String): Btn {
             val b = Btn(this, t, false, 0.85f * vs)
@@ -545,7 +552,7 @@ class MainActivity : Activity(), PlayerEvents {
         vLab.gravity = Gravity.CENTER
         vLab.minWidth = U.r(2.8f * vs)
         val bVp = sb("+")
-        bViz = sb("مؤشر صوتي")
+        bViz = sb("مؤشر")
         bPrev.setOnClickListener { step(-1) }
         bPlay.setOnClickListener { togglePlay() }
         bNext.setOnClickListener { step(1) }
@@ -553,9 +560,9 @@ class MainActivity : Activity(), PlayerEvents {
         bVm.setOnClickListener { setVol(vol - 10) }
         bVp.setOnClickListener { setVol(vol + 10) }
         bViz.setOnClickListener { audOn = !audOn; refreshUi() }
-        for (v in listOf<View>(bPrev, bPlay, bNext, bMute, bVm, vLab, bVp, bViz)) controls.addView(v)
+        for (v in listOf<View>(bVp, vLab, bVm, bMute, bPrev, bPlay, bNext, bViz)) controls.addView(v, lp(WRAP, WRAP).also { it.gravity = Gravity.CENTER_HORIZONTAL })
         for (v in listOf<View>(bPrev, bPlay, bNext, bMute, bVm, bVp, bViz)) {
-            v.setOnFocusChangeListener { _, f -> if (f) hot() }
+            v.setOnFocusChangeListener { _, _ -> }
         }
     }
 
@@ -571,14 +578,20 @@ class MainActivity : Activity(), PlayerEvents {
         stage.removeAllViews()
         val sideW = lp(U.r(S.listw.toFloat()), MATCH)
         val pl = lp(0, MATCH, 1f)
+        val cl = lp(WRAP, MATCH)
+        cl.leftMargin = U.r(0.7f); cl.rightMargin = U.r(0.7f)
+        (controls.parent as? android.view.ViewGroup)?.removeView(controls)
         if (S.listLeft) {
             stage.addView(playerCol, pl)
+            stage.addView(controls, cl)
             stage.addView(side, sideW)
         } else {
             stage.addView(side, sideW)
+            stage.addView(controls, cl)
             stage.addView(playerCol, pl)
         }
         side.visibility = if (S.list) View.VISIBLE else View.GONE
+        controls.visibility = if (full) View.GONE else View.VISIBLE
     }
 
     private fun buildPrayers() {
@@ -668,14 +681,13 @@ class MainActivity : Activity(), PlayerEvents {
         prayWrap.visibility = if (S.prayers && !full) View.VISIBLE else View.GONE
         stars.visibility = if (S.fx) View.VISIBLE else View.GONE
         clockT.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(4f * S.clock.toFloat()))
+        wxTempT.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(2f * S.clock.toFloat()))
         secsT.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.35f * S.clock.toFloat()))
         apT.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.35f * S.clock.toFloat()))
         if (S.vscale != ctlScale) {
-            val vis = controls.visibility
-            playerCol.removeView(controls)
             makeControls()
-            playerCol.addView(controls, lp(MATCH, WRAP))
-            controls.visibility = if (full) View.GONE else vis
+            placeStage()
+            controls.visibility = if (full || !S.list) View.GONE else View.VISIBLE
         }
         val ps = S.pscale.toFloat()
         val rl = prayRow.layoutParams
@@ -731,7 +743,7 @@ class MainActivity : Activity(), PlayerEvents {
     private fun syncAudInfo() {
         if (!::audInfo.isInitialized || audInfo.visibility != View.VISIBLE) return
         audClock.text = clockT.text.toString() + (if (apT.text.isNotEmpty()) " " + apT.text else "")
-        audWx.text = if (S.wx) wxCityT.text.toString() + " · " + wxInfoT.text else ""
+        audWx.text = if (S.wx) wxCityT.text.toString() + " · " + wxTempStr + " · " + wxInfoT.text else ""
         audNext.text = nextTitle.text.toString() + " " + nextName.text + "  " + nextCd.text
     }
 
@@ -759,19 +771,35 @@ class MainActivity : Activity(), PlayerEvents {
         }
     }
 
+    /** لون الحرارة (بالمئوي): بارد أزرق → معتدل أخضر → دافئ ذهبي → حار برتقالي → شديد أحمر */
+    private fun tempColor(t: Double): Int = when {
+        t < 5 -> Color.parseColor("#5AA9FF")
+        t < 15 -> Color.parseColor("#4FC3E8")
+        t < 24 -> Color.parseColor("#4CD6A0")
+        t < 32 -> Color.parseColor("#E5C15A")
+        t < 40 -> Color.parseColor("#FF9F43")
+        else -> Color.parseColor("#FF5A4D")
+    }
+
     private fun renderWx() {
         val c = S.currentCity()
         wxCityT.text = c.n
         val w = wx
         if (w == null) {
+            wxTempT.visibility = View.GONE
+            wxTempStr = ""
             wxInfoT.text = "الطقس غير متاح — تحقق من الاتصال"
             sWx.text = ""
             return
         }
         val temp = if (S.unit == "f") Math.round(w.temp * 9 / 5 + 32).toInt() else Math.round(w.temp).toInt()
         val sym = if (S.unit == "f") "°ف" else "°م"
-        val line = arStr("$temp$sym", S.digits) + " · " + Wx.text(w.code) + " · رطوبة " + arNum(w.hum, S.digits) + "٪"
-        wxInfoT.text = line
+        wxTempStr = arStr("$temp$sym", S.digits)
+        val line = wxTempStr + " · " + Wx.text(w.code) + " · رطوبة " + arNum(w.hum, S.digits) + "٪"
+        wxTempT.text = wxTempStr
+        wxTempT.setTextColor(tempColor(w.temp))
+        wxTempT.visibility = View.VISIBLE
+        wxInfoT.text = Wx.text(w.code) + " · رطوبة " + arNum(w.hum, S.digits) + "٪"
         sWx.text = c.n + " · " + line
     }
 
@@ -1206,18 +1234,7 @@ class MainActivity : Activity(), PlayerEvents {
     private val toastHide = Runnable { toastT.visibility = View.GONE }
 
     private fun setControlsAlpha(on: Boolean) {
-        controls.animate().cancel()
-        if (full) {
-            controls.visibility = View.GONE
-            return
-        }
-        if (on) {
-            controls.alpha = 1f
-            controls.visibility = View.VISIBLE
-        } else if (controls.visibility == View.VISIBLE) {
-            if (controls.hasFocus()) focusCurrentItem()
-            controls.animate().alpha(0f).setDuration(250).withEndAction { controls.visibility = View.GONE }.start()
-        }
+        controls.visibility = if (full) View.GONE else View.VISIBLE
     }
 
     private fun isInList(v: View): Boolean {
@@ -1229,15 +1246,11 @@ class MainActivity : Activity(), PlayerEvents {
         return false
     }
 
-    private fun hot() {
-        setControlsAlpha(true)
-        main.removeCallbacks(hotHide)
-        main.postDelayed(hotHide, 4000)
-    }
+    private fun hot() {}
 
     fun setFull(on: Boolean) {
         full = on
-        if (on) controls.visibility = View.GONE
+        controls.visibility = if (on) View.GONE else View.VISIBLE
         audInfo.visibility = if (on) View.VISIBLE else View.GONE
         val vlp = viz.layoutParams
         vlp.width = U.r(if (on) 27f else 18f)
@@ -1377,18 +1390,6 @@ class MainActivity : Activity(), PlayerEvents {
                 else -> {}
             }
             return true
-        }
-
-        if (down && !full && !sheetOpen) {
-            if (controls.visibility == View.VISIBLE) hot()
-            else if (k == KeyEvent.KEYCODE_DPAD_LEFT || k == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                val f = currentFocus
-                if (f != null && isInList(f)) {
-                    hot()
-                    bPlay.requestFocus()
-                    return true
-                }
-            }
         }
 
         if (down) {

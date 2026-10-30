@@ -180,6 +180,7 @@ class PlayerHost(
     val spectrum = Spectrum { b -> main.post { ev.onBands(b) } }
     private var token = 0
     private var retries = 0
+    private var altUsed = false
     private var kind = "" // yt | exo | ""
     private var current: Channel? = null
     private var volume = 80
@@ -240,12 +241,19 @@ class PlayerHost(
             override fun onPlayerError(error: PlaybackException) {
                 if (kind != "exo") return
                 val tok = token
+                val cc = current
+                if (cc != null && cc.t == "hls" && cc.fb.isNotEmpty() && !altUsed) {
+                    altUsed = true
+                    ev.onNotice("تم التحويل تلقائيًا إلى البث الاحتياطي")
+                    startExo(cc.fb, tok)
+                    return
+                }
                 if (retries < 3) {
                     val wait = 2000L shl retries
                     retries++
                     ev.onBuffering()
                     main.postDelayed({
-                        if (tok == token) current?.let { startExo(directUrl(it), tok) }
+                        if (tok == token) current?.let { startExo(if (altUsed && it.t == "hls") it.fb else directUrl(it), tok) }
                     }, wait)
                 } else {
                     ev.onFailed("انقطع البث", "تعذر الاستمرار في التشغيل بعد عدة محاولات. تحقق من الاتصال بالإنترنت أو من الرابط.", false)
@@ -275,6 +283,7 @@ class PlayerHost(
         stop()
         token++
         retries = 0
+        altUsed = false
         current = c
         val tok = token
         val useYt = c.t == "yt" && !(preferDirect && c.fb.isNotEmpty())

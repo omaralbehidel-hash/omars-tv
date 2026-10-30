@@ -52,11 +52,11 @@ object Defaults {
         Channel("العربية", "أخبار", YTB + "UCrj5BGAhtWxDfqbza9T9hqA", "yt", "https://av.alarabiya.net/alarabiapublish/alarabiya.smil/playlist.m3u8"),
         Channel("الحدث", "أخبار", YTB + "UCYcogyJ0RBPHvfw3X-5L0bQ", "yt", "https://av.alarabiya.net/alarabiapublish/alhadath.smil/playlist.m3u8"),
         Channel("سكاي نيوز عربية", "أخبار", YTB + "UCIJXOvggjKtCagMfxvcCzAA", "yt", "https://stream.skynewsarabia.com/hls/sna.m3u8"),
-        Channel("السعودية", "عامة", YTB + "UCPpsM0VmD3nuj915nMydkWQ", "yt"),
-        Channel("الإخبارية السعودية", "أخبار", "", "yt"),
+        Channel("السعودية", "عامة", "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-saudi-tv/2ad66056b51fd8c1b624854623112e43/index.m3u8", "hls", "https://cdn-globecast.akamaized.net/live/eds/saudi_tv/hls_roku/index.m3u8"),
+        Channel("الإخبارية السعودية", "أخبار", "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-al-ekhbaria/297b3ef1cd0633ad9cfba7473a686a06/index.m3u8", "hls", "https://cdn-globecast.akamaized.net/live/eds/al_ekhbariya/hls_roku/index.m3u8"),
         Channel("الإخبارية السورية", "أخبار", "https://www.youtube.com/@AlekhbariahSY", "yt"),
-        Channel("اقرأ", "إسلامية", YTB + "UCiC_h4iC9s7Ddr3CT82_EpA", "yt"),
-        Channel("الرسالة", "إسلامية", YTB + "UC4CcTYIfVFoOqsFd-IAZfDw", "yt")
+        Channel("اقرأ", "إسلامية", "https://playlist.fasttvcdn.com/pl/dlkqw1ftuvuuzkcb4pxdcg/Iqraafasttv3/playlist.m3u8", "hls", "https://playlist.fasttvcdn.com/pl/dlkqw1ftuvuuzkcb4pxdcg/Iqraafasttv1/playlist.m3u8"),
+        Channel("الرسالة", "إسلامية", "https://shls-rotana-alresalah-prod-dub.shahid.net/out/v1/936b89606b5e48db8ca28caa40adc886/index.m3u8", "hls", "https://rotana.hibridcdn.net/rotananet/risala_net-7Y83PP5adWixDF93/playlist.m3u8")
     )
 
     fun radio(): MutableList<Channel> = mutableListOf(
@@ -148,6 +148,7 @@ class Settings {
 }
 
 object Store {
+    private val FIXED = setOf("السعودية", "الإخبارية السعودية", "اقرأ", "الرسالة")
     lateinit var sp: SharedPreferences
     val s = Settings()
     var tv: MutableList<Channel> = Defaults.tv()
@@ -158,9 +159,13 @@ object Store {
         s.load(sp.getString("settings", null))
         tv = readList("tv") ?: Defaults.tv()
         radio = readList("radio") ?: Defaults.radio()
-        if (sp.getInt("defv", 0) < 2) {
-            for (d in Defaults.tv()) if (tv.none { it.n == d.n }) tv.add(d)
-            sp.edit().putInt("defv", 2).apply()
+        if (sp.getInt("defv", 0) < 3) {
+            for (d in Defaults.tv()) {
+                val e = tv.firstOrNull { it.n == d.n }
+                if (e == null) tv.add(d)
+                else if (d.n in FIXED) { e.u = d.u; e.t = d.t; e.fb = d.fb }
+            }
+            sp.edit().putInt("defv", 3).apply()
             saveLists()
         }
     }

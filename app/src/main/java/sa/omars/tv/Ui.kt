@@ -202,6 +202,9 @@ class VizView(ctx: Context) : View(ctx) {
     private val pBar = Paint(Paint.ANTI_ALIAS_FLAG)
     private val pRing = Paint(Paint.ANTI_ALIAS_FLAG)
     private val dst = RectF()
+    private val rippleT = LongArray(4)   // وقت بدء كل ارتداد (0 = خامل)
+    private var lastBass = 0f
+    private var lastSpawn = 0L
 
     init {
         pBar.strokeCap = Paint.Cap.ROUND
@@ -221,6 +224,32 @@ class VizView(ctx: Context) : View(ctx) {
         pRing.alpha = 50
         pRing.strokeWidth = maxOf(2f, rOut * 0.012f)
         c.drawCircle(cx, cy, r0 * 0.93f, pRing)
+        // مؤشر الارتداد: حلقات تتسع وتتلاشى عند نبضة الجهير
+        val now = android.os.SystemClock.uptimeMillis()
+        if (real) {
+            var bass = 0f
+            for (i in 0 until minOf(6, bands.size)) bass += bands[i]
+            bass /= 6f
+            if (bass > 0.38f && bass - lastBass > 0.05f && now - lastSpawn > 260) {
+                for (i in rippleT.indices) if (rippleT[i] == 0L) { rippleT[i] = now; lastSpawn = now; break }
+            }
+            lastBass = bass
+        }
+        var live = false
+        for (i in rippleT.indices) {
+            val t0 = rippleT[i]
+            if (t0 == 0L) continue
+            val p = (now - t0) / 1100f
+            if (p >= 1f) { rippleT[i] = 0L; continue }
+            live = true
+            val rr = r0 * 0.93f + (rOut * 1.0f - r0 * 0.93f) * p
+            pRing.color = Pal.GOLD
+            pRing.alpha = ((1f - p) * (1f - p) * 150).toInt()
+            pRing.strokeWidth = maxOf(2f, rOut * 0.014f) * (1f - 0.5f * p)
+            c.drawCircle(cx, cy, rr, pRing)
+        }
+        if (live) postInvalidateOnAnimation()
+        pRing.alpha = 50
         // الأعمدة (متناظرة يمينًا ويسارًا)
         val n = bands.size
         val total = n * 2
