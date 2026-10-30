@@ -71,6 +71,10 @@ class MainActivity : Activity(), PlayerEvents {
     private lateinit var liveT: TextView
     private lateinit var controls: LinearLayout
     private lateinit var playerCol: LinearLayout
+    private lateinit var audInfo: LinearLayout
+    private lateinit var audClock: TextView
+    private lateinit var audWx: TextView
+    private lateinit var audNext: TextView
     private lateinit var prayWrap: LinearLayout
     private lateinit var introScr: FrameLayout
     private lateinit var bPlay: IBtn
@@ -241,6 +245,7 @@ class MainActivity : Activity(), PlayerEvents {
         introScr.animate().alpha(0f).setDuration(450).withEndAction {
             introScr.visibility = View.GONE
             focusCurrentItem()
+            hot()
         }.start()
     }
 
@@ -411,8 +416,18 @@ class MainActivity : Activity(), PlayerEvents {
         audPanel.gravity = Gravity.CENTER
         audPanel.setBackgroundColor(Color.parseColor("#0C0C0D"))
         audPanel.visibility = View.GONE
+        audInfo = hbox(this, 2.2f)
+        audInfo.gravity = Gravity.CENTER
+        audClock = label(this, "", 3.2f, Pal.INK, "sans-serif-light")
+        audWx = label(this, "", 1.5f, Pal.INK2)
+        audNext = label(this, "", 1.7f, Pal.GOLD, "sans-serif-medium")
+        audInfo.addView(audClock)
+        audInfo.addView(audWx)
+        audInfo.addView(audNext)
+        audInfo.visibility = View.GONE
+        audPanel.addView(audInfo, lp(WRAP, WRAP))
         viz = VizView(this)
-        audPanel.addView(viz, lp(U.r(14f), U.r(14f)))
+        audPanel.addView(viz, lp(U.r(18f), U.r(18f)))
         audName = label(this, "", 2f, Pal.INK, "sans-serif-medium")
         audName.gravity = Gravity.CENTER
         audPanel.addView(audName, lp(WRAP, WRAP))
@@ -500,6 +515,7 @@ class MainActivity : Activity(), PlayerEvents {
         playerCol = vbox(this, 0.8f)
         playerCol.addView(playerCard, lp(MATCH, 0, 1f))
         playerCol.addView(controls, lp(MATCH, WRAP))
+        controls.visibility = View.GONE
         placeStage()
     }
 
@@ -568,10 +584,10 @@ class MainActivity : Activity(), PlayerEvents {
         shiftBox.addView(prayWrap, lp(MATCH, WRAP))
         nextCard = hbox(this, 0.8f)
         nextCard.gravity = Gravity.CENTER
-        nextTitle = label(this, "الصلاة القادمة :", 1.3f, Pal.INK2)
-        nextName = label(this, "", 1.5f, Pal.GOLD, "sans-serif-medium")
-        nextCd = label(this, "", 1.5f, Pal.INK, "sans-serif-medium")
-        nextTime = label(this, "", 1.0f, Pal.INK2)
+        nextTitle = label(this, "الصلاة القادمة :", 1.9f, Pal.INK2)
+        nextName = label(this, "", 2.3f, Pal.GOLD, "sans-serif-medium")
+        nextCd = label(this, "", 2.3f, Pal.INK, "sans-serif-medium")
+        nextTime = label(this, "", 1.4f, Pal.INK2)
         nextCard.addView(nextTitle)
         nextCard.addView(nextName)
         nextCard.addView(nextCd)
@@ -579,14 +595,14 @@ class MainActivity : Activity(), PlayerEvents {
         prayWrap.addView(nextCard, lp(MATCH, WRAP))
         prayRow = hbox(this, 0.8f)
         prayRow.gravity = Gravity.NO_GRAVITY
-        prayWrap.addView(prayRow, lp(MATCH, U.r(5.6f)))
+        prayWrap.addView(prayRow, lp(MATCH, U.r(4.4f)))
         for (i in 0 until 6) {
             val c = vbox(this)
             c.gravity = Gravity.CENTER
             c.background = shape(Pal.GLASS, U.px(1.1f), Pal.LINE, 1)
-            val n = label(this, PRAYER_NAMES[i], 1f, Pal.INK2)
+            val n = label(this, PRAYER_NAMES[i], 0.85f, Pal.INK2)
             n.gravity = Gravity.CENTER
-            val t = label(this, "—", 1.9f, Pal.INK, "sans-serif-medium")
+            val t = label(this, "—", 1.5f, Pal.INK, "sans-serif-medium")
             t.gravity = Gravity.CENTER
             c.addView(n, lp(WRAP, WRAP))
             c.addView(t, lp(WRAP, WRAP))
@@ -653,21 +669,22 @@ class MainActivity : Activity(), PlayerEvents {
         secsT.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.35f * S.clock.toFloat()))
         apT.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.35f * S.clock.toFloat()))
         if (S.vscale != ctlScale) {
+            val vis = controls.visibility
             playerCol.removeView(controls)
             makeControls()
             playerCol.addView(controls, lp(MATCH, WRAP))
-            controls.visibility = if (full) View.GONE else View.VISIBLE
+            controls.visibility = if (full) View.GONE else vis
         }
         val ps = S.pscale.toFloat()
         val rl = prayRow.layoutParams
-        rl.height = U.r(5.6f * ps)
+        rl.height = U.r(4.4f * ps)
         prayRow.layoutParams = rl
-        for (t in pTimes) t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.9f * ps))
-        for (n in pNameT) n.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1f * ps))
-        nextTitle.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.3f * ps))
-        nextName.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.5f * ps))
-        nextCd.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.5f * ps))
-        nextTime.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1f * ps))
+        for (t in pTimes) t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.5f * ps))
+        for (n in pNameT) n.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(0.85f * ps))
+        nextTitle.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.9f * ps))
+        nextName.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(2.3f * ps))
+        nextCd.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(2.3f * ps))
+        nextTime.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.4f * ps))
         placeStage()
         sleepIn.alpha = S.dim.toFloat()
         lastDay = ""
@@ -709,6 +726,13 @@ class MainActivity : Activity(), PlayerEvents {
     // =====================================================================
     //  الساعة والتواريخ
     // =====================================================================
+    private fun syncAudInfo() {
+        if (!::audInfo.isInitialized || audInfo.visibility != View.VISIBLE) return
+        audClock.text = clockT.text.toString() + (if (apT.text.isNotEmpty()) " " + apT.text else "")
+        audWx.text = if (S.wx) wxCityT.text.toString() + " · " + wxInfoT.text else ""
+        audNext.text = nextTitle.text.toString() + " " + nextName.text + "  " + nextCd.text
+    }
+
     private fun tickClock() {
         val c = S.currentCity()
         val z = zoneNow(c)
@@ -718,6 +742,7 @@ class MainActivity : Activity(), PlayerEvents {
         if (apT.text != ap) apT.text = ap
         sClock.text = t
         sAp.text = ap
+        syncAudInfo()
         val key = z.toLocalDate().toString() + S.hijri + S.digits
         if (key != lastDateKey) {
             lastDateKey = key
@@ -1179,7 +1204,27 @@ class MainActivity : Activity(), PlayerEvents {
     private val toastHide = Runnable { toastT.visibility = View.GONE }
 
     private fun setControlsAlpha(on: Boolean) {
-        controls.visibility = if (full && !on) View.GONE else View.VISIBLE
+        controls.animate().cancel()
+        if (full) {
+            controls.visibility = View.GONE
+            return
+        }
+        if (on) {
+            controls.alpha = 1f
+            controls.visibility = View.VISIBLE
+        } else if (controls.visibility == View.VISIBLE) {
+            if (controls.hasFocus()) focusCurrentItem()
+            controls.animate().alpha(0f).setDuration(250).withEndAction { controls.visibility = View.GONE }.start()
+        }
+    }
+
+    private fun isInList(v: View): Boolean {
+        var p: android.view.ViewParent? = v.parent
+        while (p != null) {
+            if (p === listBox) return true
+            p = p.parent
+        }
+        return false
     }
 
     private fun hot() {
@@ -1190,7 +1235,13 @@ class MainActivity : Activity(), PlayerEvents {
 
     fun setFull(on: Boolean) {
         full = on
-        controls.visibility = if (on) View.GONE else View.VISIBLE
+        if (on) controls.visibility = View.GONE
+        audInfo.visibility = if (on) View.VISIBLE else View.GONE
+        val vlp = viz.layoutParams
+        vlp.width = U.r(if (on) 27f else 18f)
+        vlp.height = vlp.width
+        viz.layoutParams = vlp
+        syncAudInfo()
         topBar.visibility = if (on) View.GONE else View.VISIBLE
         prayWrap.visibility = if (on || !S.prayers) View.GONE else View.VISIBLE
         side.visibility = if (on || !S.list) View.GONE else View.VISIBLE
@@ -1324,6 +1375,18 @@ class MainActivity : Activity(), PlayerEvents {
                 else -> {}
             }
             return true
+        }
+
+        if (down && !full && !sheetOpen) {
+            if (controls.visibility == View.VISIBLE) hot()
+            else if (k == KeyEvent.KEYCODE_DPAD_LEFT || k == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                val f = currentFocus
+                if (f != null && isInList(f)) {
+                    hot()
+                    bPlay.requestFocus()
+                    return true
+                }
+            }
         }
 
         if (down) {
