@@ -1,0 +1,1 @@
+    mResumedActivity: ActivityRecord{f03b659 u0 sa.omars.tv/.MainActivity t8}
