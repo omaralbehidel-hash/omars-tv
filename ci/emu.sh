@@ -38,6 +38,14 @@ adb shell am force-stop sa.omars.tv
 adb shell am start -n sa.omars.tv/.MainActivity --es dbg radio
 sleep 40
 shot 07_radio
+adb shell am force-stop sa.omars.tv
+adb shell am start -n sa.omars.tv/.MainActivity --es dbg manage
+sleep 14
+shot 08_manage
+adb shell am force-stop sa.omars.tv
+adb shell am start -n sa.omars.tv/.MainActivity --es dbg radiofull
+sleep 30
+shot 09_radiofull
 adb logcat -d -s OMARSDBG > shots/dbg.txt
 adb logcat -d -t 3000 > shots/logcat.txt
 adb logcat -d -b crash > shots/crash.txt
