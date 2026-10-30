@@ -42,6 +42,11 @@ adb shell am force-stop sa.omars.tv
 adb shell am start -n sa.omars.tv/.MainActivity --es dbg manage
 sleep 14
 shot 08_manage
+adb forward tcp:8080 tcp:8080
+curl -s -m 8 localhost:8080/ | head -c 300 > shots/remote_get.txt
+curl -s -m 8 --data-urlencode 'tab=tv' --data-urlencode 'name=قناة تجربة' --data-urlencode 'url=https://example.com/live.m3u8' localhost:8080/add | grep -o 'class="m">[^<]*' > shots/remote_post.txt
+sleep 2
+shot 08b_after_add
 adb shell am force-stop sa.omars.tv
 adb shell am start -n sa.omars.tv/.MainActivity --es dbg radiofull
 sleep 30
