@@ -320,6 +320,8 @@ class PlayerHost(
     private fun parseYt(u: String): Pair<String, String>? { // (kind, id)
         val ch = Regex("youtube\\.com/channel/(UC[\\w-]{20,})").find(u)
         if (ch != null) return Pair("ch", ch.groupValues[1])
+        val h = Regex("youtube\\.com/@([\\w.\\-%]+)").find(u)
+        if (h != null) return Pair("h", h.groupValues[1])
         val v = Regex("(?:youtu\\.be/|youtube\\.com/(?:watch\\?(?:.*&)?v=|live/|embed/|shorts/))([\\w-]{6,})").find(u)
         if (v != null) return Pair("v", v.groupValues[1])
         return null
@@ -332,7 +334,31 @@ class PlayerHost(
         ytPlaying = false
         surface.visibility = android.view.View.INVISIBLE
         web.visibility = android.view.View.VISIBLE
-        val (k, id) = parseYt(c.u)!!
+        val (k0, id0) = parseYt(c.u)!!
+        if (k0 == "h") {
+            val cached = Store.getStr("yh.$id0")
+            if (cached.isNotEmpty()) {
+                startYt(c.copy(u = "https://www.youtube.com/channel/$cached"), tok)
+                return
+            }
+            ev.onBuffering()
+            bg {
+                val html = httpGet("https://www.youtube.com/@$id0", 15000)
+                val cid = html?.let { Regex("\"channelId\":\"(UC[\\w-]{22})\"").find(it)?.groupValues?.get(1) ?: Regex("channel/(UC[\\w-]{22})").find(it)?.groupValues?.get(1) }
+                ui {
+                    if (tok != token) return@ui
+                    if (cid == null) {
+                        if (!fallbackToDirect(tok)) ev.onFailed("تعذر العثور على القناة", "لم أستطع تحديد قناة يوتيوب من الاسم @$id0. جرّب رابط القناة youtube.com/channel/UC…", false)
+                    } else {
+                        Store.putStr("yh.$id0", cid)
+                        startYt(c.copy(u = "https://www.youtube.com/channel/$cid"), tok)
+                    }
+                }
+            }
+            return
+        }
+        val k = k0
+        val id = id0
         val vq = when (Store.s.q) {
             "max" -> "&vq=hd1080"
             "med" -> "&vq=hd720"

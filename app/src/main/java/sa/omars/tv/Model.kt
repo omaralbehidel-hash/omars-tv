@@ -51,7 +51,12 @@ object Defaults {
         Channel("الجزيرة 2", "أخبار", "https://live-hls-web-aja2-gcp.thehlive.com/AJA2/index.m3u8", "hls"),
         Channel("العربية", "أخبار", YTB + "UCrj5BGAhtWxDfqbza9T9hqA", "yt", "https://av.alarabiya.net/alarabiapublish/alarabiya.smil/playlist.m3u8"),
         Channel("الحدث", "أخبار", YTB + "UCYcogyJ0RBPHvfw3X-5L0bQ", "yt", "https://av.alarabiya.net/alarabiapublish/alhadath.smil/playlist.m3u8"),
-        Channel("سكاي نيوز عربية", "أخبار", YTB + "UCIJXOvggjKtCagMfxvcCzAA", "yt", "https://stream.skynewsarabia.com/hls/sna.m3u8")
+        Channel("سكاي نيوز عربية", "أخبار", YTB + "UCIJXOvggjKtCagMfxvcCzAA", "yt", "https://stream.skynewsarabia.com/hls/sna.m3u8"),
+        Channel("السعودية", "عامة", YTB + "UCPpsM0VmD3nuj915nMydkWQ", "yt"),
+        Channel("الإخبارية السعودية", "أخبار", "", "yt"),
+        Channel("الإخبارية السورية", "أخبار", "https://www.youtube.com/@AlekhbariahSY", "yt"),
+        Channel("اقرأ", "إسلامية", YTB + "UCiC_h4iC9s7Ddr3CT82_EpA", "yt"),
+        Channel("الرسالة", "إسلامية", YTB + "UC4CcTYIfVFoOqsFd-IAZfDw", "yt")
     )
 
     fun radio(): MutableList<Channel> = mutableListOf(
@@ -153,6 +158,11 @@ object Store {
         s.load(sp.getString("settings", null))
         tv = readList("tv") ?: Defaults.tv()
         radio = readList("radio") ?: Defaults.radio()
+        if (sp.getInt("defv", 0) < 2) {
+            for (d in Defaults.tv()) if (tv.none { it.n == d.n }) tv.add(d)
+            sp.edit().putInt("defv", 2).apply()
+            saveLists()
+        }
     }
 
     fun saveSettings() = sp.edit().putString("settings", s.toJson()).apply()

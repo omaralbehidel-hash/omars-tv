@@ -50,6 +50,7 @@ class Sheets(private val a: MainActivity) {
     }
 
     fun onClosed() {
+        Remote.stop()
         kind = Kind.NONE
         formOpen = false
         timerLabelT = null
@@ -295,6 +296,7 @@ class Sheets(private val a: MainActivity) {
     private var mTab = "tv"
     private var mcf = -1
     private lateinit var mHost: LinearLayout
+    private lateinit var remoteT: TextView
     private lateinit var tabTv: Btn
     private lateinit var tabRadio: Btn
     private lateinit var formBox: LinearLayout
@@ -327,6 +329,10 @@ class Sheets(private val a: MainActivity) {
         tabs.addView(add)
         tabs.addView(close)
         p.addView(tabs, lp(WRAP, WRAP))
+        val addr = Remote.start { tab, name, url -> remoteAdd(tab, name, url) }
+        remoteT = label(a, if (addr != null) "للإضافة من الهاتف (على نفس الواي فاي) افتح في متصفح الهاتف:  $addr" else "الإضافة من الهاتف غير متاحة (لا شبكة)", 0.95f, Pal.GOLD)
+        remoteT.setTextIsSelectable(false)
+        p.addView(remoteT, lp(MATCH, WRAP))
         mHost = vbox(a, 0.45f)
         listScroll = scroller(mHost)
         p.addView(listScroll, lp(MATCH, 0, 1f))
@@ -379,6 +385,28 @@ class Sheets(private val a: MainActivity) {
         }
     }
 
+    private val ytOk = Regex("youtube\\.com/channel/UC[\\w-]{20,}|youtu\\.be/[\\w-]{6,}|youtube\\.com/(watch\\?(.*&)?v=|live/|embed/|shorts/)[\\w-]{6,}|youtube\\.com/@[\\w.\\-%]+")
+
+    /** تُستدعى من خيط الخادم؛ تتحقق ثم تضيف على خيط الواجهة. */
+    private fun remoteAdd(tab: String, name: String, url: String): String {
+        if (!Regex("^https?://\\S+$").matches(url)) return "الرابط يجب أن يبدأ بـ https://"
+        val yt = url.contains("youtube.com") || url.contains("youtu.be")
+        if (yt && !ytOk.containsMatchIn(url)) return "رابط يوتيوب غير مدعوم. استخدم رابط القناة أو @اسم_القناة أو رابط بث مباشر."
+        val type = if (tab == "radio") "audio" else if (yt) "yt" else "hls"
+        ui {
+            val arr = Store.list(tab)
+            arr.add(Channel(name, if (tab == "radio") "إذاعة" else "قناة", url, type))
+            Store.saveLists()
+            a.renderList()
+            if (kind == Kind.MANAGE && !formOpen) {
+                mTab = tab
+                renderManage()
+            }
+            a.toast("تمت إضافة $name")
+        }
+        return "تمت إضافة «$name» ✓ يمكنك إضافة غيرها."
+    }
+
     private fun focusIn(i: Int, child: Int) {
         val row = mHost.getChildAt(i) as? LinearLayout ?: return
         row.getChildAt(child)?.requestFocus()
@@ -424,7 +452,7 @@ class Sheets(private val a: MainActivity) {
         e.setTextColor(Pal.INK)
         e.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.05f))
         e.setSingleLine(true)
-        e.imeOptions = EditorInfo.IME_ACTION_DONE
+        e.imeOptions = EditorInfo.IME_ACTION_DONE or EditorInfo.IME_FLAG_NO_EXTRACT_UI
         e.inputType = InputType.TYPE_CLASS_TEXT or (if (ltr) InputType.TYPE_TEXT_VARIATION_URI else 0)
         e.setPadding(U.r(1f), U.r(0.55f), U.r(1f), U.r(0.55f))
         e.background = focusBg(Color.parseColor("#101012"), U.px(0.9f))
@@ -454,11 +482,23 @@ class Sheets(private val a: MainActivity) {
         val cancel = Btn(a, "إلغاء")
         save.setOnClickListener { saveForm() }
         cancel.setOnClickListener { closeForm() }
+        val paste = Btn(a, "لصق الرابط")
+        paste.setOnClickListener {
+            try {
+                val cm = a.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                val t = cm.primaryClip?.getItemAt(0)?.coerceToText(a)?.toString()?.trim().orEmpty()
+                if (t.isNotEmpty()) fUrl.setText(t) else fMsg.text = "الحافظة فارغة."
+            } catch (_: Exception) {
+                fMsg.text = "تعذر قراءة الحافظة."
+            }
+        }
         row.addView(save)
+        row.addView(paste)
         row.addView(cancel)
         formBox.addView(fName, lp(MATCH, WRAP))
         formBox.addView(fUrl, lp(MATCH, WRAP))
         formBox.addView(fFb, lp(MATCH, WRAP))
+        fType.visibility = View.GONE
         formBox.addView(fType, lp(WRAP, WRAP))
         formBox.addView(fMsg, lp(MATCH, WRAP))
         formBox.addView(row, lp(WRAP, WRAP))
@@ -470,7 +510,7 @@ class Sheets(private val a: MainActivity) {
             fTypeV == "yt" -> "النوع: YouTube"
             else -> "النوع: بث مباشر متوافق"
         }
-        fFb.visibility = if (mTab == "tv" && fTypeV == "yt") View.VISIBLE else View.GONE
+        fFb.visibility = if (mTab == "tv") View.VISIBLE else View.GONE
     }
 
     private fun openForm(i: Int) {
@@ -503,14 +543,13 @@ class Sheets(private val a: MainActivity) {
         if (n.isEmpty()) { fMsg.text = "أدخل اسمًا."; fName.requestFocus(); return }
         if (u.isNotEmpty() && !Regex("^https?://\\S+$").matches(u)) { fMsg.text = "الرابط يجب أن يبدأ بـ https://"; fUrl.requestFocus(); return }
         val yt = u.contains("youtube.com") || u.contains("youtu.be")
-        if (mTab == "tv" && fTypeV == "yt" && u.isNotEmpty() && !Regex("youtube\\.com/channel/UC[\\w-]{20,}|youtu\\.be/[\\w-]{6,}|youtube\\.com/(watch\\?(.*&)?v=|live/|embed/|shorts/)[\\w-]{6,}").containsMatchIn(u)) {
-            fMsg.text = "رابط YouTube غير مدعوم. استخدم youtube.com/channel/UC… أو رابط فيديو مباشر."
+        if (yt && !ytOk.containsMatchIn(u)) {
+            fMsg.text = "رابط يوتيوب غير مدعوم. استخدم رابط القناة أو @اسم_القناة أو رابط بث مباشر."
             fUrl.requestFocus()
             return
         }
-        if (fTypeV == "yt" && !yt && u.isNotEmpty()) { fMsg.text = "الرابط ليس رابط YouTube. اختر النوع «بث مباشر متوافق»."; return }
         val arr = Store.list(mTab)
-        val type = if (mTab == "radio") "audio" else fTypeV
+        val type = if (mTab == "radio") "audio" else if (yt || (u.isEmpty() && fTypeV == "yt")) "yt" else "hls"
         val ch = if (editIdx >= 0) arr[editIdx] else Channel(n, if (mTab == "radio") "إذاعة" else "قناة", u, type)
         ch.n = n
         ch.u = u
