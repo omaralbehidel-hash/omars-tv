@@ -315,6 +315,7 @@ class Sheets(private val a: MainActivity) {
         mTab = a.mode
         mcf = -1
         val p = panel(62f, 41f, "إدارة القنوات")
+        p.minimumWidth = U.r(50f)
         val tabs = hbox(a, 0.7f)
         tabTv = Btn(a, "القنوات")
         tabRadio = Btn(a, "المحطات")
@@ -330,9 +331,14 @@ class Sheets(private val a: MainActivity) {
         tabs.addView(close)
         p.addView(tabs, lp(WRAP, WRAP))
         val addr = Remote.start { tab, name, url -> remoteAdd(tab, name, url) }
-        remoteT = label(a, if (addr != null) "للإضافة من الهاتف (على نفس الواي فاي) افتح في متصفح الهاتف:  $addr" else "الإضافة من الهاتف غير متاحة (لا شبكة)", 0.95f, Pal.GOLD)
-        remoteT.setTextIsSelectable(false)
+        remoteT = label(a, if (addr != null) "للإضافة من الهاتف (على نفس الواي فاي) افتح في متصفح الهاتف:" else "الإضافة من الهاتف غير متاحة (لا شبكة)", 0.95f, Pal.INK2)
         p.addView(remoteT, lp(MATCH, WRAP))
+        if (addr != null) {
+            val ad = label(a, addr, 1.5f, Pal.GOLD, "sans-serif-medium")
+            ad.textDirection = View.TEXT_DIRECTION_LTR
+            ad.gravity = Gravity.CENTER
+            p.addView(ad, lp(MATCH, WRAP))
+        }
         mHost = vbox(a, 0.45f)
         listScroll = scroller(mHost)
         p.addView(listScroll, lp(MATCH, 0, 1f))
@@ -356,7 +362,7 @@ class Sheets(private val a: MainActivity) {
         }
         for ((i, c) in arr.withIndex()) {
             val row = hbox(a, 0.4f)
-            val nm = Btn(a, c.n + "   " + (if (c.u.isEmpty()) "بلا رابط" else c.c), false, 1f)
+            val nm = Btn(a, c.n + (if (c.u.isEmpty()) "  (بلا رابط)" else ""), false, 1f)
             nm.gravity = Gravity.START or Gravity.CENTER_VERTICAL
             nm.setOnClickListener { openForm(i) }
             val fav = Btn(a, if (c.f) "★" else "☆", false, 1f)
