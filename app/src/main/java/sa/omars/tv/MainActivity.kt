@@ -177,6 +177,7 @@ class MainActivity : Activity(), PlayerEvents {
             if (intent.getStringExtra("dbg") == "radiofull") root.postDelayed({ setMode("radio", true); play(0, true); setFull(true) }, 5500)
         }
         host = PlayerHost(this, surface, web, this)
+        host.watchNetwork()
         host.setVolume(vol)
         sheets = Sheets(this)
         applySettings()
@@ -231,6 +232,7 @@ class MainActivity : Activity(), PlayerEvents {
     }
 
     override fun onDestroy() {
+        host.unwatchNetwork()
         main.removeCallbacksAndMessages(null)
         host.release()
         try {

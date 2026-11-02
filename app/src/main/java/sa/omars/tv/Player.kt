@@ -181,6 +181,41 @@ class PlayerHost(
     private var token = 0
     private var retries = 0
     private var altUsed = false
+    private var netCb: android.net.ConnectivityManager.NetworkCallback? = null
+    private var netWasLost = false
+
+    /** عند عودة الإنترنت بعد انقطاعه يُعاد تشغيل القناة تلقائيًا. */
+    fun watchNetwork() {
+        if (netCb != null) return
+        try {
+            val cm = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
+            val cb = object : android.net.ConnectivityManager.NetworkCallback() {
+                override fun onLost(network: android.net.Network) { netWasLost = true }
+                override fun onAvailable(network: android.net.Network) {
+                    if (!netWasLost) return
+                    netWasLost = false
+                    main.postDelayed({
+                        val c = current ?: return@postDelayed
+                        val e = exo
+                        val ok = if (kind == "exo") (e != null && (e.isPlaying || !e.playWhenReady)) else ytPlaying
+                        if (!ok) {
+                            ev.onNotice("عاد الاتصال — إعادة تشغيل البث")
+                            play(c, Store.s.direct)
+                        }
+                    }, 1500)
+                }
+            }
+            cm.registerDefaultNetworkCallback(cb)
+            netCb = cb
+        } catch (_: Exception) {}
+    }
+
+    fun unwatchNetwork() {
+        try {
+            netCb?.let { (ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager).unregisterNetworkCallback(it) }
+        } catch (_: Exception) {}
+        netCb = null
+    }
     private var kind = "" // yt | exo | ""
     private var current: Channel? = null
     private var volume = 80
@@ -248,8 +283,8 @@ class PlayerHost(
                     startExo(cc.fb, tok)
                     return
                 }
-                if (retries < 3) {
-                    val wait = 2000L shl retries
+                if (retries < 10) {
+                    val wait = minOf(2000L shl minOf(retries, 3), 15000L)
                     retries++
                     ev.onBuffering()
                     main.postDelayed({
