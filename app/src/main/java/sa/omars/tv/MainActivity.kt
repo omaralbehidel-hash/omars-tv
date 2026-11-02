@@ -536,7 +536,7 @@ class MainActivity : Activity(), PlayerEvents {
     private fun makeControls() {
         val vs = S.vscale.toFloat()
         ctlScale = S.vscale
-        controls = vbox(this, 0.45f * vs)
+        controls = vbox(this, 0.3f * vs)
         controls.gravity = Gravity.CENTER
         controls.setPadding(U.r(0.5f * vs), U.r(0.6f * vs), U.r(0.5f * vs), U.r(0.6f * vs))
         controls.background = shape(Pal.PANEL, U.px(1.6f * vs), Pal.LINE, 1)
@@ -546,16 +546,16 @@ class MainActivity : Activity(), PlayerEvents {
             b.setPadding(U.r(0.9f * vs), U.r(0.3f * vs), U.r(0.9f * vs), U.r(0.3f * vs))
             return b
         }
-        val bPrev = IBtn(this, R.drawable.ic_prev, 2.2f * vs)
-        bPlay = IBtn(this, R.drawable.ic_play, 2.7f * vs, true)
-        val bNext = IBtn(this, R.drawable.ic_next, 2.2f * vs)
-        bMute = IBtn(this, R.drawable.ic_vol, 2.2f * vs)
-        val bVm = IBtn(this, R.drawable.ic_minus, 2.2f * vs)
+        val bPrev = IBtn(this, R.drawable.ic_prev, 1.75f * vs)
+        bPlay = IBtn(this, R.drawable.ic_play, 2.2f * vs, true)
+        val bNext = IBtn(this, R.drawable.ic_next, 1.75f * vs)
+        bMute = IBtn(this, R.drawable.ic_vol, 1.75f * vs)
+        val bVm = IBtn(this, R.drawable.ic_minus, 1.75f * vs)
         vLab = label(this, "", 0.9f * vs, Pal.INK, "sans-serif-medium")
         vLab.gravity = Gravity.CENTER
         vLab.minWidth = U.r(2.8f * vs)
-        val bVp = IBtn(this, R.drawable.ic_plus, 2.2f * vs)
-        bViz = IBtn(this, R.drawable.ic_wave, 2.2f * vs)
+        val bVp = IBtn(this, R.drawable.ic_plus, 1.75f * vs)
+        bViz = IBtn(this, R.drawable.ic_wave, 1.75f * vs)
         bPrev.setOnClickListener { step(-1) }
         bPlay.setOnClickListener { togglePlay() }
         bNext.setOnClickListener { step(1) }
