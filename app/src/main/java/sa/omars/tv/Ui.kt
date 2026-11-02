@@ -304,3 +304,67 @@ class StarsView(ctx: Context) : View(ctx) {
         }
     }
 }
+
+
+/** شريط الوقت المتبقي للصلاة القادمة (يمتلئ من اليمين). */
+class ProgBar(ctx: Context) : View(ctx) {
+    var frac = 0f
+        set(v) { field = v; invalidate() }
+    private val p = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val rf = RectF()
+    override fun onDraw(c: Canvas) {
+        val w = width.toFloat(); val h = height.toFloat()
+        if (w <= 0f) return
+        p.color = Color.parseColor("#1FFFFFFF")
+        rf.set(0f, 0f, w, h)
+        c.drawRoundRect(rf, h / 2, h / 2, p)
+        val fw = (w * frac).coerceAtLeast(if (frac > 0f) h else 0f)
+        if (fw <= 0f) return
+        p.color = Pal.GOLD
+        rf.set(w - fw, 0f, w, h)   // من اليمين
+        c.drawRoundRect(rf, h / 2, h / 2, p)
+    }
+}
+
+/** شعار يلمع لمعة خاطفة كل فترة. */
+class ShineImage(ctx: Context) : ImageView(ctx) {
+    private var t0 = 0L
+    private val p = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val every = 9000L
+    private val dur = 1200L
+    private val kick = object : Runnable {
+        override fun run() {
+            t0 = android.os.SystemClock.uptimeMillis()
+            postInvalidateOnAnimation()
+            postDelayed(this, every)
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        postDelayed(kick, 2500)
+    }
+
+    override fun onDetachedFromWindow() {
+        removeCallbacks(kick)
+        super.onDetachedFromWindow()
+    }
+
+    override fun onDraw(c: Canvas) {
+        val el = android.os.SystemClock.uptimeMillis() - t0
+        if (t0 == 0L || el > dur) { super.onDraw(c); return }
+        val sc = c.saveLayer(0f, 0f, width.toFloat(), height.toFloat(), null)
+        super.onDraw(c)
+        val f = el / dur.toFloat()
+        val w = width.toFloat()
+        val x = -w * 0.6f + f * w * 2.2f
+        p.shader = android.graphics.LinearGradient(x, 0f, x + w * 0.6f, height.toFloat() * 0.6f,
+            intArrayOf(0x00FFFFFF, 0xDDFFFFFF.toInt(), 0x00FFFFFF), floatArrayOf(0f, 0.5f, 1f), android.graphics.Shader.TileMode.CLAMP)
+        p.xfermode = android.graphics.PorterDuffXfermode(android.graphics.PorterDuff.Mode.SRC_ATOP)
+        c.drawRect(0f, 0f, w, height.toFloat(), p)
+        p.xfermode = null
+        p.shader = null
+        c.restoreToCount(sc)
+        postInvalidateOnAnimation()
+    }
+}

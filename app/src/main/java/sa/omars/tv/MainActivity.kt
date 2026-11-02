@@ -82,7 +82,7 @@ class MainActivity : Activity(), PlayerEvents {
     private lateinit var bPlay: IBtn
     private lateinit var bMute: IBtn
     private lateinit var vLab: TextView
-    private lateinit var bViz: Btn
+    private lateinit var bViz: IBtn
     private lateinit var side: LinearLayout
     private lateinit var segTv: TextView
     private lateinit var segRadio: TextView
@@ -93,6 +93,7 @@ class MainActivity : Activity(), PlayerEvents {
 
     // الصلوات
     private lateinit var prayRow: LinearLayout
+    private lateinit var prayBar: ProgBar
     private lateinit var nextTitle: TextView
     private lateinit var nextName: TextView
     private lateinit var nextCd: TextView
@@ -388,7 +389,7 @@ class MainActivity : Activity(), PlayerEvents {
         for (b in listOf(bSleep, bManage, bSet, bFull, bQuit)) tools.addView(b)
         topBar.addView(tools, lp(WRAP, WRAP))
 
-        val mark = ImageView(this)
+        val mark = ShineImage(this)
         mark.setImageResource(R.drawable.logo_symbol)
         mark.scaleType = ImageView.ScaleType.FIT_CENTER
         val ml = lp(U.r(1.9f), U.r(2.8f))
@@ -495,8 +496,8 @@ class MainActivity : Activity(), PlayerEvents {
         val seg = hbox(this, 0.2f)
         seg.setPadding(U.r(0.25f), U.r(0.25f), U.r(0.25f), U.r(0.25f))
         seg.background = shape(Color.parseColor("#12FFFFFF"), U.px(2.4f), Pal.LINE, 1)
-        segTv = segBtn("تلفزيون")
-        segRadio = segBtn("راديو")
+        segTv = segBtn("تلفزيون", R.drawable.ic_tv)
+        segRadio = segBtn("راديو", R.drawable.ic_radio)
         segTv.setOnClickListener { switchMode("tv") }
         segRadio.setOnClickListener { switchMode("radio") }
         seg.addView(segTv, lp(0, WRAP, 1f))
@@ -549,12 +550,12 @@ class MainActivity : Activity(), PlayerEvents {
         bPlay = IBtn(this, R.drawable.ic_play, 2.7f * vs, true)
         val bNext = IBtn(this, R.drawable.ic_next, 2.2f * vs)
         bMute = IBtn(this, R.drawable.ic_vol, 2.2f * vs)
-        val bVm = sb("−")
+        val bVm = IBtn(this, R.drawable.ic_minus, 2.2f * vs)
         vLab = label(this, "", 0.9f * vs, Pal.INK, "sans-serif-medium")
         vLab.gravity = Gravity.CENTER
         vLab.minWidth = U.r(2.8f * vs)
-        val bVp = sb("+")
-        bViz = sb("مؤشر")
+        val bVp = IBtn(this, R.drawable.ic_plus, 2.2f * vs)
+        bViz = IBtn(this, R.drawable.ic_wave, 2.2f * vs)
         bPrev.setOnClickListener { step(-1) }
         bPlay.setOnClickListener { togglePlay() }
         bNext.setOnClickListener { step(1) }
@@ -568,8 +569,13 @@ class MainActivity : Activity(), PlayerEvents {
         }
     }
 
-    private fun segBtn(t: String): TextView {
+    private fun segBtn(t: String, ic: Int): TextView {
         val b = Btn(this, t)
+        val d = resources.getDrawable(ic, theme).mutate()
+        val sz = U.r(1.5f)
+        d.setBounds(0, 0, sz, sz)
+        b.setCompoundDrawablesRelative(d, null, null, null)
+        b.compoundDrawablePadding = U.r(0.5f)
         b.background = focusBg(Color.TRANSPARENT, U.px(2.2f), Pal.GOLD, Pal.GOLD)
         b.setPadding(U.r(1f), U.r(0.45f), U.r(1f), U.r(0.45f))
         b.minHeight = 0
@@ -610,16 +616,20 @@ class MainActivity : Activity(), PlayerEvents {
         nextCard.addView(nextCd)
         nextCard.addView(nextTime)
         prayWrap.addView(nextCard, lp(MATCH, WRAP))
+        prayBar = ProgBar(this)
+        val pbl = lp(MATCH, U.r(0.45f))
+        pbl.leftMargin = U.r(0.4f); pbl.rightMargin = U.r(0.4f)
+        prayWrap.addView(prayBar, pbl)
         prayRow = hbox(this, 0.8f)
         prayRow.gravity = Gravity.NO_GRAVITY
-        prayWrap.addView(prayRow, lp(MATCH, U.r(4.4f)))
+        prayWrap.addView(prayRow, lp(MATCH, U.r(5f)))
         for (i in 0 until 6) {
             val c = vbox(this)
             c.gravity = Gravity.CENTER
             c.background = shape(Pal.GLASS, U.px(1.1f), Pal.LINE, 1)
-            val n = label(this, PRAYER_NAMES[i], 0.85f, Pal.INK2)
+            val n = label(this, PRAYER_NAMES[i], 1.0f, Pal.INK2)
             n.gravity = Gravity.CENTER
-            val t = label(this, "—", 1.5f, Pal.INK, "sans-serif-medium")
+            val t = label(this, "—", 1.7f, Pal.INK, "sans-serif-medium")
             t.gravity = Gravity.CENTER
             c.addView(n, lp(WRAP, WRAP))
             c.addView(t, lp(WRAP, WRAP))
@@ -693,10 +703,10 @@ class MainActivity : Activity(), PlayerEvents {
         }
         val ps = S.pscale.toFloat()
         val rl = prayRow.layoutParams
-        rl.height = U.r(4.4f * ps)
+        rl.height = U.r(5f * ps)
         prayRow.layoutParams = rl
-        for (t in pTimes) t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.5f * ps))
-        for (n in pNameT) n.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(0.85f * ps))
+        for (t in pTimes) t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.7f * ps))
+        for (n in pNameT) n.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.0f * ps))
         nextTitle.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(1.9f * ps))
         nextName.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(2.3f * ps))
         nextCd.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX, U.px(2.3f * ps))
@@ -821,6 +831,7 @@ class MainActivity : Activity(), PlayerEvents {
             nextCd.text = ""
             nextTime.text = ""
             for (card in pCards) card.alpha = 1f
+            prayBar.frac = 0f
             return
         }
         var ni = -1
@@ -835,6 +846,9 @@ class MainActivity : Activity(), PlayerEvents {
             name = PRAYER_NAMES[ni]
         }
         val left = (nextSec - now).coerceAtLeast(0)
+        val prevSec = if (ni == -1) t[5] else if (ni == 0) t[5] - 86400 else t[ni - 1]
+        val span = (nextSec - prevSec).coerceAtLeast(1)
+        prayBar.frac = ((now - prevSec).toFloat() / span).coerceIn(0f, 1f)
         nextTitle.text = "الصلاة القادمة :"
         nextName.text = name
         nextCd.text = arStr(p2(left / 3600) + ":" + p2((left % 3600) / 60) + ":" + p2(left % 60), S.digits)
@@ -991,8 +1005,12 @@ class MainActivity : Activity(), PlayerEvents {
         val onC = Pal.ONGOLD
         segTv.isSelected = mode == "tv"
         segRadio.isSelected = mode == "radio"
-        segTv.setTextColor(if (mode == "tv") onC else Pal.INK2)
-        segRadio.setTextColor(if (mode == "radio") onC else Pal.INK2)
+        val c1 = if (mode == "tv") onC else Pal.INK2
+        val c2 = if (mode == "radio") onC else Pal.INK2
+        segTv.setTextColor(c1)
+        segRadio.setTextColor(c2)
+        segTv.compoundDrawablesRelative[0]?.setTint(c1)
+        segRadio.compoundDrawablesRelative[0]?.setTint(c2)
     }
 
     fun setMode(m: String, silent: Boolean) {
@@ -1173,7 +1191,7 @@ class MainActivity : Activity(), PlayerEvents {
         audPanel.visibility = if (showAud) View.VISIBLE else View.GONE
         host.spectrum.enabled = showAud && !sleeping
         audName.text = c?.n ?: ""
-        bViz.setTextColor(if (audOn) Pal.GOLD else Pal.INK)
+        bViz.tint(if (audOn) Pal.GOLD else Pal.INK)
         bViz.visibility = if (mode == "radio") View.GONE else View.VISIBLE
         audNote.text = when {
             buffering -> "جارٍ التحميل…"
